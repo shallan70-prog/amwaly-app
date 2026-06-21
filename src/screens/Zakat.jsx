@@ -25,11 +25,18 @@ export default function Zakat() {
         {data && (
           <>
             <div className="hero warn">
-              <div className="label">إجمالى الزكاة المستحقة</div>
-              <div className="value tnums">{money(data.totalDueEgp)} <span style={{ fontSize: 14 }}>EGP</span></div>
+              <div className="label">باقى الزكاة المستحقة</div>
+              <div className="value tnums">{money(data.remainingEgp != null ? data.remainingEgp : data.totalDueEgp)} <span style={{ fontSize: 14 }}>EGP</span></div>
             </div>
 
             <div className="card">
+              <div className="row"><span>إجمالى الزكاة</span><span className="tnums">{money(data.totalDueEgp)}</span></div>
+              <div className="row"><span>مدفوع مقدّمًا</span><span className="tnums pos">− {money(data.advancePaidEgp)}</span></div>
+              <div className="row"><span style={{ fontWeight: 500 }}>الباقى المستحق</span><span className="tnums" style={{ fontWeight: 600, color: 'var(--warning)' }}>{money(data.remainingEgp != null ? data.remainingEgp : data.totalDueEgp)}</span></div>
+            </div>
+
+            <div className="card">
+              <div className="section-title">تفصيل الأصول</div>
               <div className="row" style={{ color: 'var(--text-3)', fontSize: 11 }}>
                 <span>الأصل</span><span>بعد التحويل</span><span>الزكاة</span>
               </div>

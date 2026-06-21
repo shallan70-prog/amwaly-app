@@ -58,10 +58,10 @@ export default function Home({ showToast }) {
             </div>
 
             <div className="card">
-              <div className="section-title">الزكاة المستحقة</div>
+              <div className="section-title">الزكاة</div>
               <div className="row">
-                <span>إجمالى الزكاة</span>
-                <span className="tnums" style={{ color: 'var(--warning)', fontWeight: 600 }}>{money(data.zakatDueEgp)} EGP</span>
+                <span>باقى الزكاة المستحقة</span>
+                <span className="tnums" style={{ color: 'var(--warning)', fontWeight: 600 }}>{money(data.zakatRemainingEgp != null ? data.zakatRemainingEgp : data.zakatDueEgp)} EGP</span>
               </div>
             </div>
 
