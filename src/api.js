@@ -60,5 +60,6 @@ export const api = {
   addInvestmentTrade: (payload) => callPost('addInvestmentTrade', payload),
   addTrade: (payload) => callPost('addTrade', payload),
   closeTrade: (payload) => callPost('closeTrade', payload),
-  addEntryPlan: (payload) => callPost('addEntryPlan', payload)
+  addEntryPlan: (payload) => callPost('addEntryPlan', payload),
+  addZakatAdvance: (payload) => callPost('addZakatAdvance', payload)
 }

@@ -7,6 +7,7 @@ import TransactionForm from './TransactionForm.jsx'
 import InvestmentForm from './InvestmentForm.jsx'
 import TradeForm from './TradeForm.jsx'
 import CloseTradeForm from './CloseTradeForm.jsx'
+import ZakatForm from './ZakatForm.jsx'
 import EntryPlanForm from './EntryPlanForm.jsx'
 
 export default function Add({ onClose, showToast }) {
@@ -40,6 +41,7 @@ export default function Add({ onClose, showToast }) {
       {view === 'investment' && <InvestmentForm {...common} />}
       {view === 'trade' && <TradeForm {...common} />}
       {view === 'closeTrade' && <CloseTradeForm {...common} />}
+      {view === 'zakat' && <ZakatForm {...common} />}
       {view === 'entryPlan' && <EntryPlanForm {...common} />}
     </div>
   )

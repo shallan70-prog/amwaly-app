@@ -6,6 +6,7 @@ const ITEMS = [
   { id: 'investment', title: 'صفقة استثمار', sub: 'شراء / بيع كريبتو' },
   { id: 'trade', title: 'صفقة تداول', sub: 'دخول بستوب وهدف' },
   { id: 'closeTrade', title: 'إغلاق صفقة', sub: 'بالمتوسط المرجّح' },
+  { id: 'zakat', title: 'زكاة', sub: 'دفعة تُضاف للمدفوع مقدّمًا' },
   { id: 'entryPlan', title: 'خطة دخول', sub: 'تخطيط عملة جديدة' }
 ]
 
