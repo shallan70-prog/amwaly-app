@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { api } from '../api.js'
-import { useLoader } from '../useLoader.js'
+import { useCachedLoader } from '../useCachedLoader.js'
 
 const REPORTS = [
   { id: 'Monthly Cash Flow', name: 'التدفّق الشهرى' },
@@ -11,7 +11,7 @@ const REPORTS = [
 
 export default function Reports() {
   const [sel, setSel] = useState(REPORTS[0].id)
-  const { data, loading, error } = useLoader(() => api.report(sel), [sel])
+  const { data, loading, error } = useCachedLoader('report_' + sel, () => api.report(sel))
   const report = data && data.report
 
   return (

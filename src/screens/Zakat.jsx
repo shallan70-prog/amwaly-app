@@ -1,6 +1,6 @@
 import React from 'react'
 import { api } from '../api.js'
-import { useLoader } from '../useLoader.js'
+import { useCachedLoader } from '../useCachedLoader.js'
 import { money } from '../format.js'
 
 const ASSET_NAMES = {
@@ -14,7 +14,7 @@ const ASSET_NAMES = {
 }
 
 export default function Zakat() {
-  const { data, loading, error } = useLoader(() => api.zakat())
+  const { data, loading, error } = useCachedLoader('zakat', () => api.zakat())
 
   return (
     <>

@@ -1,10 +1,10 @@
 import React from 'react'
 import { api } from '../api.js'
-import { useLoader } from '../useLoader.js'
+import { useCachedLoader } from '../useCachedLoader.js'
 import { money, pct, signed, plClass, usd } from '../format.js'
 
 export default function Portfolio() {
-  const { data, loading, error } = useLoader(() => api.portfolio())
+  const { data, loading, error } = useCachedLoader('portfolio', () => api.portfolio())
 
   return (
     <>

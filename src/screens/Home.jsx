@@ -1,16 +1,18 @@
 import React from 'react'
 import { api } from '../api.js'
-import { useLoader } from '../useLoader.js'
+import { useCachedLoader } from '../useCachedLoader.js'
+import { invalidate } from '../cache.js'
 import { money, signed, plClass } from '../format.js'
 
 export default function Home({ showToast }) {
-  const { data, loading, error, reload } = useLoader(() => api.summary())
+  const { data, loading, error, mutate } = useCachedLoader('summary', () => api.summary())
 
   const refresh = async () => {
     showToast('بيحدّث الأسعار...')
     try {
-      await api.refresh()
-      await reload()
+      const s = await api.refresh()
+      mutate(s)
+      invalidate(['portfolio', 'zakat'])
       showToast('تم التحديث')
     } catch (e) {
       showToast('فشل التحديث')

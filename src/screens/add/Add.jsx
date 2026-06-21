@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { api } from '../../api.js'
-import { useLoader } from '../../useLoader.js'
+import { useCachedLoader } from '../../useCachedLoader.js'
+import { invalidate } from '../../cache.js'
 import AddHub from './AddHub.jsx'
 import TransactionForm from './TransactionForm.jsx'
 import InvestmentForm from './InvestmentForm.jsx'
@@ -10,7 +11,7 @@ import EntryPlanForm from './EntryPlanForm.jsx'
 
 export default function Add({ onClose, showToast }) {
   const [view, setView] = useState('hub')
-  const { data, loading, error } = useLoader(() => api.formOptions())
+  const { data, loading, error } = useCachedLoader('formOptions', () => api.formOptions())
 
   if (loading) {
     return <div className="app"><div className="spinner" /></div>
@@ -29,7 +30,7 @@ export default function Add({ onClose, showToast }) {
   const common = {
     opts: data,
     onBack: () => setView('hub'),
-    onDone: () => { showToast('تم الحفظ ✓'); onClose() }
+    onDone: () => { invalidate(['summary', 'portfolio', 'zakat']); showToast('تم الحفظ ✓'); onClose() }
   }
 
   return (
