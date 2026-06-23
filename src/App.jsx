@@ -24,24 +24,31 @@ export default function App() {
     setTimeout(() => setToast(''), 2200)
   }, [])
 
-  // Re-lock whenever the app was backgrounded and comes back — but NOT on a
-  // plain page refresh (the session-unlocked flag survives a reload), and not
-  // because of the biometric dialog itself (authBusy guards the loop).
+  // Lock again when the app is backgrounded and returns — but NOT on a plain
+  // refresh. Trick: a real backgrounding keeps the page alive, so a short timer
+  // fires and clears the session-unlock flag (survives even if Android reloads
+  // the page on return). A page reload instead fires `pagehide` first, which
+  // cancels the timer, so a refresh stays unlocked. `authBusy` skips the
+  // biometric dialog's own hide/show so it doesn't loop.
   useEffect(() => {
-    let wasHidden = false
+    let hideTimer = 0
     const onVisibility = () => {
       if (document.visibilityState === 'hidden') {
-        wasHidden = true
+        clearTimeout(hideTimer)
+        hideTimer = setTimeout(() => { if (!authBusy()) clearSessionUnlock() }, 150)
       } else {
-        if (wasHidden && lockEnabled() && !authBusy()) {
-          clearSessionUnlock()
-          setLocked(true)
-        }
-        wasHidden = false
+        clearTimeout(hideTimer)
+        if (lockEnabled() && !authBusy() && !isSessionUnlocked()) setLocked(true)
       }
     }
+    const onPageHide = () => clearTimeout(hideTimer)
     document.addEventListener('visibilitychange', onVisibility)
-    return () => document.removeEventListener('visibilitychange', onVisibility)
+    window.addEventListener('pagehide', onPageHide)
+    return () => {
+      document.removeEventListener('visibilitychange', onVisibility)
+      window.removeEventListener('pagehide', onPageHide)
+      clearTimeout(hideTimer)
+    }
   }, [])
 
   if (!configured) {
