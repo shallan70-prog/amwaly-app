@@ -88,3 +88,18 @@ export async function verifyBiometric() {
   })
   return true
 }
+
+// Session unlock: persists across a page refresh (same session) but is cleared
+// when the app is fully closed — so a refresh does NOT re-prompt, only a
+// close/reopen (or returning after being away) does.
+const SS_UNLOCKED = 'amwaly_unlocked'
+
+export function markUnlocked() {
+  try { sessionStorage.setItem(SS_UNLOCKED, '1') } catch (e) { /* ignore */ }
+}
+export function isSessionUnlocked() {
+  try { return sessionStorage.getItem(SS_UNLOCKED) === '1' } catch (e) { return false }
+}
+export function clearSessionUnlock() {
+  try { sessionStorage.removeItem(SS_UNLOCKED) } catch (e) { /* ignore */ }
+}

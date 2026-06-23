@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { api } from '../api.js'
 import {
   lockEnabled, hasPin, setPin, clearLock,
-  biometricSupported, biometricEnabled, registerBiometric
+  biometricSupported, biometricEnabled, registerBiometric, markUnlocked
 } from '../lock.js'
 
 export default function More({ showToast, onReset, setTab }) {
@@ -20,13 +20,13 @@ export default function More({ showToast, onReset, setTab }) {
 
   const savePin = () => {
     if (!/^\d{4,6}$/.test(pinInput)) { showToast('الرقم 4 لـ 6 أرقام'); return }
-    setPin(pinInput); setPinInput(''); force((n) => n + 1)
+    setPin(pinInput); markUnlocked(); setPinInput(''); force((n) => n + 1)
     showToast('تم تفعيل القفل')
   }
 
   const enableBio = async () => {
     if (!hasPin()) { showToast('عيّن رقم PIN أولًا'); return }
-    try { await registerBiometric(); force((n) => n + 1); showToast('تم تفعيل البصمة') }
+    try { await registerBiometric(); markUnlocked(); force((n) => n + 1); showToast('تم تفعيل البصمة') }
     catch (e) { showToast('تعذّر تفعيل البصمة') }
   }
 
