@@ -103,3 +103,11 @@ export function isSessionUnlocked() {
 export function clearSessionUnlock() {
   try { sessionStorage.removeItem(SS_UNLOCKED) } catch (e) { /* ignore */ }
 }
+
+// The biometric system dialog itself hides/shows the page. Suppress the
+// background re-lock while (and just after) authenticating, to avoid a loop.
+let authInProgress = false
+let lastAuthAt = 0
+export function beginAuth() { authInProgress = true }
+export function endAuth() { authInProgress = false; lastAuthAt = Date.now() }
+export function authBusy() { return authInProgress || Date.now() - lastAuthAt < 2500 }

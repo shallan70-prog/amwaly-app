@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect } from 'react'
 import { isConfigured } from './api.js'
-import { lockEnabled, isSessionUnlocked, markUnlocked, clearSessionUnlock } from './lock.js'
+import { lockEnabled, isSessionUnlocked, markUnlocked, clearSessionUnlock, authBusy } from './lock.js'
 import BottomNav from './components/BottomNav.jsx'
 import Home from './screens/Home.jsx'
 import Portfolio from './screens/Portfolio.jsx'
@@ -24,19 +24,20 @@ export default function App() {
     setTimeout(() => setToast(''), 2200)
   }, [])
 
-  // Re-lock only after the app was actually left (backgrounded) for a while —
-  // NOT on a plain page refresh (the session-unlocked flag survives a reload).
+  // Re-lock whenever the app was backgrounded and comes back — but NOT on a
+  // plain page refresh (the session-unlocked flag survives a reload), and not
+  // because of the biometric dialog itself (authBusy guards the loop).
   useEffect(() => {
-    let hiddenAt = 0
+    let wasHidden = false
     const onVisibility = () => {
       if (document.visibilityState === 'hidden') {
-        hiddenAt = Date.now()
+        wasHidden = true
       } else {
-        if (hiddenAt && lockEnabled() && Date.now() - hiddenAt > 10000) {
+        if (wasHidden && lockEnabled() && !authBusy()) {
           clearSessionUnlock()
           setLocked(true)
         }
-        hiddenAt = 0
+        wasHidden = false
       }
     }
     document.addEventListener('visibilitychange', onVisibility)

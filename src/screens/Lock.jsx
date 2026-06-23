@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react'
-import { verifyPin, biometricEnabled, verifyBiometric } from '../lock.js'
+import { verifyPin, biometricEnabled, verifyBiometric, beginAuth, endAuth } from '../lock.js'
 
 export default function Lock({ onUnlock }) {
   const [pin, setPinVal] = useState('')
@@ -7,7 +7,10 @@ export default function Lock({ onUnlock }) {
 
   const tryBio = useCallback(async () => {
     if (!biometricEnabled()) return
-    try { await verifyBiometric(); onUnlock() } catch (e) { /* fall back to PIN */ }
+    beginAuth()
+    try { await verifyBiometric(); onUnlock() }
+    catch (e) { /* fall back to PIN */ }
+    finally { endAuth() }
   }, [onUnlock])
 
   useEffect(() => { tryBio() }, [tryBio])
