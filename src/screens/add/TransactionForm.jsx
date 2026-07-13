@@ -25,6 +25,15 @@ export default function TransactionForm({ opts, onBack, onDone }) {
     assetOf(account, subAccount) !== assetOf(transferTo, toSubAccount)
   const showCashFlow = !isTransfer && !!account
 
+  // Cash Flow Source options depend on the type: Income → income sources, Expenses →
+  // expense sources, Adjustment → both. Falls back to the legacy flat list on older APIs.
+  const cfIncome = opts.incomeSources || opts.cashFlowSources || []
+  const cfExpense = opts.expenseSources || opts.cashFlowSources || []
+  const cashFlowOptions =
+    type === 'Income' ? cfIncome
+      : type === 'Expenses' ? cfExpense
+        : [...new Set([...cfIncome, ...cfExpense])]
+
   const currency = account === 'Saving' ? fiat : subAccount
 
   const submit = async () => {
@@ -57,7 +66,7 @@ export default function TransactionForm({ opts, onBack, onDone }) {
   return (
     <FormShell title="إضافة معاملة" onBack={onBack} onSubmit={submit} submitting={busy} error={err}>
       <Field label="النوع">
-        <Select value={type} onChange={(v) => { setType(v); setTransferTo(''); setToSubAccount('') }} options={opts.transactionTypes} />
+        <Select value={type} onChange={(v) => { setType(v); setTransferTo(''); setToSubAccount(''); setCashFlow('') }} options={opts.transactionTypes} />
       </Field>
 
       {type && (
@@ -100,7 +109,7 @@ export default function TransactionForm({ opts, onBack, onDone }) {
 
       {showCashFlow && (
         <Field label="مصدر التدفّق">
-          <Select value={cashFlow} onChange={setCashFlow} options={opts.cashFlowSources} />
+          <Select value={cashFlow} onChange={setCashFlow} options={cashFlowOptions} />
         </Field>
       )}
 
