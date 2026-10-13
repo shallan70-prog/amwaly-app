@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import { api } from '../api.js'
 import { useCachedLoader } from '../useCachedLoader.js'
 import { invalidate } from '../cache.js'
-import { money, signed, plClass } from '../format.js'
+import { money, usd } from '../format.js'
 import CurrencyDetail from './CurrencyDetail.jsx'
 
 const FIAT_ROWS = [
@@ -95,16 +95,16 @@ export default function Home({ showToast }) {
                 <div className="value tnums">{money(data.liquidity.fiat.EGP)}</div>
               </div>
               <div className="metric">
-                <div className="label">مستقرّة USDT</div>
+                <div className="label">الثروة بالدولار</div>
+                <div className="value tnums">{data.egpPerUsd > 0 ? usd(data.netWorthEgp / data.egpPerUsd, 0) : '—'}</div>
+              </div>
+              <div className="metric">
+                <div className="label">العملات المستقرّة</div>
                 <div className="value tnums">{money(data.liquidity.totalStableUsd, 2)}</div>
               </div>
               <div className="metric">
                 <div className="label">الكريبتو USD</div>
-                <div className="value tnums">{money(data.crypto.marketValueUsd, 2)}</div>
-              </div>
-              <div className="metric">
-                <div className="label">ربح/خسارة</div>
-                <div className={'value tnums ' + plClass(data.crypto.totalPL)}>{signed(data.crypto.totalPL, 2)}</div>
+                <div className="value tnums">{money(data.crypto.totalPortfolioUsd != null ? data.crypto.totalPortfolioUsd : data.crypto.marketValueUsd, 2)}</div>
               </div>
             </div>
 

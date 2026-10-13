@@ -16,7 +16,7 @@ export default function CurrencyDetail({ code, label, decimals, total, locations
         </div>
 
         <div className="card">
-          <div className="section-title">الخزن</div>
+          <div className="section-title">الخزنة</div>
           {!locations && (
             <div className="row"><span className="muted">التفاصيل بتتحدّث، افتحها تانى بعد ثوانى</span></div>
           )}
