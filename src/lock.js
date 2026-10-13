@@ -111,3 +111,46 @@ let lastAuthAt = 0
 export function beginAuth() { authInProgress = true }
 export function endAuth() { authInProgress = false; lastAuthAt = Date.now() }
 export function authBusy() { return authInProgress || Date.now() - lastAuthAt < 2500 }
+
+// Leaving detection. The hide time is written synchronously the moment the page is
+// hidden, so it is recorded even though Android freezes the page (and its timers)
+// right after — a timer-based approach never got to run there.
+const SS_HIDDEN_AT = 'amwaly_hidden_at'
+const SS_PAGEHIDE_AT = 'amwaly_pagehide_at'
+// A hide and a pagehide this close together are one refresh/close, not leaving.
+const UNLOAD_PAIR_MS = 1000
+
+function ssTime(key) {
+  try { return Number(sessionStorage.getItem(key)) || 0 } catch (e) { return 0 }
+}
+function ssSetTime(key) {
+  try { sessionStorage.setItem(key, String(Date.now())) } catch (e) { /* ignore */ }
+}
+function ssClearLeaveMarks() {
+  try {
+    sessionStorage.removeItem(SS_HIDDEN_AT)
+    sessionStorage.removeItem(SS_PAGEHIDE_AT)
+  } catch (e) { /* ignore */ }
+}
+
+// The biometric dialog itself hides the page; that is not leaving the app.
+export function noteHidden() { if (!authInProgress) ssSetTime(SS_HIDDEN_AT) }
+export function notePageHide() { ssSetTime(SS_PAGEHIDE_AT) }
+
+// Same page visible again: true (and the session unlock is dropped) if the app was left.
+export function consumeLeaveOnResume() {
+  const left = ssTime(SS_HIDDEN_AT) > 0
+  ssClearLeaveMarks()
+  if (left) clearSessionUnlock()
+  return left
+}
+
+// Fresh page load: a hidden page that the system later reloaded or restored counts as
+// leaving; a hide immediately paired with pagehide is a plain refresh and stays unlocked.
+export function consumeLeaveOnStartup() {
+  const hiddenAt = ssTime(SS_HIDDEN_AT)
+  const pageHideAt = ssTime(SS_PAGEHIDE_AT)
+  ssClearLeaveMarks()
+  const isRefresh = pageHideAt > 0 && Math.abs(pageHideAt - hiddenAt) < UNLOAD_PAIR_MS
+  if (hiddenAt > 0 && !isRefresh) clearSessionUnlock()
+}
