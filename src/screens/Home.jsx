@@ -1,11 +1,47 @@
-import React from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { api } from '../api.js'
 import { useCachedLoader } from '../useCachedLoader.js'
 import { invalidate } from '../cache.js'
 import { money, signed, plClass } from '../format.js'
+import CurrencyDetail from './CurrencyDetail.jsx'
+
+const FIAT_ROWS = [
+  { code: 'EGP', label: 'جنيه', decimals: 0 },
+  { code: 'USD', label: 'دولار', decimals: 2 },
+  { code: 'SAR', label: 'ريال', decimals: 2 },
+  { code: 'AED', label: 'درهم', decimals: 2 }
+]
+
+const DETAIL_KEY = 'amwalyCurrencyDetail'
+
+function detailFromHistory() {
+  const s = window.history.state
+  return (s && s[DETAIL_KEY]) || null
+}
 
 export default function Home({ showToast }) {
   const { data, loading, error, mutate } = useCachedLoader('summary', () => api.summary())
+  const [detail, setDetail] = useState(detailFromHistory)
+  const detailRef = useRef(detail)
+  detailRef.current = detail
+
+  // Each detail page gets its own history entry, so the phone's back button closes it
+  // (popstate) instead of leaving the app.
+  useEffect(() => {
+    const onPop = () => setDetail(detailFromHistory())
+    window.addEventListener('popstate', onPop)
+    return () => {
+      window.removeEventListener('popstate', onPop)
+      // Leaving Home (another tab or the Add screen) with a detail page open: drop its entry.
+      if (detailRef.current) window.history.back()
+    }
+  }, [])
+
+  const openDetail = (code) => {
+    window.history.pushState({ [DETAIL_KEY]: code }, '')
+    setDetail(code)
+  }
+  const closeDetail = () => window.history.back()
 
   const refresh = async () => {
     showToast('بيحدّث الأسعار...')
@@ -17,6 +53,21 @@ export default function Home({ showToast }) {
     } catch (e) {
       showToast('فشل التحديث')
     }
+  }
+
+  if (detail && data) {
+    const row = FIAT_ROWS.find((f) => f.code === detail) || { code: detail, label: '', decimals: 2 }
+    const byLocation = data.liquidity.fiatByLocation
+    return (
+      <CurrencyDetail
+        code={row.code}
+        label={row.label}
+        decimals={row.decimals}
+        total={data.liquidity.fiat[row.code]}
+        locations={byLocation ? byLocation[row.code] || [] : null}
+        onBack={closeDetail}
+      />
+    )
   }
 
   return (
@@ -67,10 +118,22 @@ export default function Home({ showToast }) {
 
             <div className="card">
               <div className="section-title">الأرصدة الورقية</div>
-              <div className="row"><span>جنيه EGP</span><span className="tnums">{money(data.liquidity.fiat.EGP)}</span></div>
-              <div className="row"><span>دولار USD</span><span className="tnums">{money(data.liquidity.fiat.USD, 2)}</span></div>
-              <div className="row"><span>ريال SAR</span><span className="tnums">{money(data.liquidity.fiat.SAR, 2)}</span></div>
-              <div className="row"><span>درهم AED</span><span className="tnums">{money(data.liquidity.fiat.AED, 2)}</span></div>
+              {FIAT_ROWS.map((f) => (
+                <div
+                  className="row tap"
+                  key={f.code}
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => openDetail(f.code)}
+                  onKeyDown={(e) => { if (e.key === 'Enter') openDetail(f.code) }}
+                >
+                  <span>{f.label} {f.code}</span>
+                  <span className="end">
+                    <span className="tnums">{money(data.liquidity.fiat[f.code], f.decimals)}</span>
+                    <span className="chev">‹</span>
+                  </span>
+                </div>
+              ))}
             </div>
           </>
         )}

@@ -89,6 +89,10 @@ body {
 .row:last-child { border-bottom: none; }
 .row .sym { font-weight: 600; }
 .row .muted { color: var(--text-2); font-size: 13px; }
+.row.tap { cursor: pointer; margin: 0 -4px; padding-left: 8px; padding-right: 8px; border-radius: var(--radius-sm); }
+.row.tap:active { background: var(--surface-2); }
+.row .end { display: flex; align-items: center; gap: 10px; }
+.row .chev { color: var(--text-3); font-size: 18px; line-height: 1; }
 
 .pos { color: var(--success); }
 .neg { color: var(--danger); }

@@ -17,7 +17,7 @@ export default function Portfolio() {
             <div className="metrics">
               <div className="metric">
                 <div className="label">إجمالى الكريبتو</div>
-                <div className="value tnums">{usd(data.totalMarketUsd)}</div>
+                <div className="value tnums">{usd(data.totalPortfolioUsd != null ? data.totalPortfolioUsd : data.totalMarketUsd)}</div>
               </div>
               <div className="metric">
                 <div className="label">ربح/خسارة</div>
@@ -29,6 +29,13 @@ export default function Portfolio() {
               <div className="row" style={{ color: 'var(--text-3)', fontSize: 11 }}>
                 <span>العملة</span><span>القيمة</span><span>ربح/خسارة</span>
               </div>
+              {(data.stables || []).map((s) => (
+                <div className="row" key={s.symbol}>
+                  <span className="sym">{s.symbol}</span>
+                  <span className="muted tnums">{usd(s.balance)}</span>
+                  <span className="flat">—</span>
+                </div>
+              ))}
               {data.coins.map((c) => (
                 <div className="row" key={c.symbol}>
                   <span className="sym">{c.symbol}</span>
@@ -36,7 +43,7 @@ export default function Portfolio() {
                   <span className={'tnums ' + plClass(c.totalPL)}>{pct(c.totalPLPercent)}</span>
                 </div>
               ))}
-              {data.coins.length === 0 && <div className="row"><span className="muted">لا توجد عملات</span></div>}
+              {data.coins.length === 0 && !(data.stables || []).length && <div className="row"><span className="muted">لا توجد عملات</span></div>}
             </div>
           </>
         )}
