@@ -10,7 +10,9 @@ const ASSET_NAMES = {
   'Total Fiat AED': 'نقدية درهم',
   'Total Crypto': 'كريبتو',
   'Gold': 'ذهب',
-  'Stocks': 'أسهم'
+  'Stocks': 'أسهم',
+  'Debts Receivable': 'ديون ليا',
+  'Debts Payable': 'ديون عليا'
 }
 
 export default function Zakat() {
