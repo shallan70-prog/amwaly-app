@@ -3,6 +3,7 @@ import { linkStyle } from './ui.jsx'
 
 const ITEMS = [
   { id: 'transaction', title: 'معاملة', sub: 'دخل / مصروف / تحويل' },
+  { id: 'debt', title: 'دين', sub: 'سلفة ليك أو عليك' },
   { id: 'investment', title: 'صفقة استثمار', sub: 'شراء / بيع كريبتو' },
   { id: 'trade', title: 'صفقة تداول', sub: 'دخول بستوب وهدف' },
   { id: 'closeTrade', title: 'إغلاق صفقة', sub: 'بالمتوسط المرجّح' },

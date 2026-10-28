@@ -41,7 +41,7 @@ export default function Zakat() {
                 <span>الأصل</span><span>بعد التحويل</span><span>الزكاة</span>
               </div>
               {data.rows
-                .filter((r) => r.afterConversionEgp > 0)
+                .filter((r) => r.afterConversionEgp !== 0)
                 .map((r, i) => (
                   <div className="row" key={i}>
                     <span>{ASSET_NAMES[r.asset] || r.asset}</span>

@@ -9,6 +9,7 @@ import TradeForm from './TradeForm.jsx'
 import CloseTradeForm from './CloseTradeForm.jsx'
 import ZakatForm from './ZakatForm.jsx'
 import EntryPlanForm from './EntryPlanForm.jsx'
+import DebtForm from './DebtForm.jsx'
 
 export default function Add({ onClose, showToast }) {
   const [view, setView] = useState('hub')
@@ -43,6 +44,7 @@ export default function Add({ onClose, showToast }) {
       {view === 'closeTrade' && <CloseTradeForm {...common} />}
       {view === 'zakat' && <ZakatForm {...common} />}
       {view === 'entryPlan' && <EntryPlanForm {...common} />}
+      {view === 'debt' && <DebtForm {...common} />}
     </div>
   )
 }

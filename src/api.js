@@ -43,7 +43,11 @@ async function callPost(action, payload = {}) {
     body: JSON.stringify({ action, token, ...payload })
   })
   const data = await res.json()
-  if (!data.ok) throw new Error(data.error || 'request_failed')
+  if (!data.ok) {
+    const err = new Error(data.error || 'request_failed')
+    err.data = data
+    throw err
+  }
   return data
 }
 
@@ -61,5 +65,6 @@ export const api = {
   addTrade: (payload) => callPost('addTrade', payload),
   closeTrade: (payload) => callPost('closeTrade', payload),
   addEntryPlan: (payload) => callPost('addEntryPlan', payload),
-  addZakatAdvance: (payload) => callPost('addZakatAdvance', payload)
+  addZakatAdvance: (payload) => callPost('addZakatAdvance', payload),
+  addDebt: (payload) => callPost('addDebt', payload)
 }

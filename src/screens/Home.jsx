@@ -4,6 +4,7 @@ import { useCachedLoader } from '../useCachedLoader.js'
 import { invalidate } from '../cache.js'
 import { money, usd } from '../format.js'
 import CurrencyDetail from './CurrencyDetail.jsx'
+import DebtsDetail from './DebtsDetail.jsx'
 
 const FIAT_ROWS = [
   { code: 'EGP', label: 'جنيه', decimals: 0 },
@@ -13,6 +14,7 @@ const FIAT_ROWS = [
 ]
 
 const DETAIL_KEY = 'amwalyCurrencyDetail'
+const DEBTS_DETAIL = 'DEBTS'
 
 function detailFromHistory() {
   const s = window.history.state
@@ -53,6 +55,10 @@ export default function Home({ showToast }) {
     } catch (e) {
       showToast('فشل التحديث')
     }
+  }
+
+  if (detail === DEBTS_DETAIL && data) {
+    return <DebtsDetail debts={data.debts} onBack={closeDetail} />
   }
 
   if (detail && data) {
@@ -135,6 +141,31 @@ export default function Home({ showToast }) {
                 </div>
               ))}
             </div>
+
+            {data.debts && (
+              <div className="card">
+                <div className="section-title">الديون</div>
+                {[
+                  { label: 'ليك عند الناس', value: data.debts.receivableEgp, cls: 'pos' },
+                  { label: 'عليك للناس', value: data.debts.payableEgp, cls: 'neg' }
+                ].map((d) => (
+                  <div
+                    className="row tap"
+                    key={d.label}
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => openDetail(DEBTS_DETAIL)}
+                    onKeyDown={(e) => { if (e.key === 'Enter') openDetail(DEBTS_DETAIL) }}
+                  >
+                    <span>{d.label}</span>
+                    <span className="end">
+                      <span className={'tnums ' + (d.value ? d.cls : '')}>{money(d.value)} EGP</span>
+                      <span className="chev">‹</span>
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
           </>
         )}
       </div>
