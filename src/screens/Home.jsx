@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { api } from '../api.js'
 import { useCachedLoader } from '../useCachedLoader.js'
+import StaleBanner from '../components/StaleBanner.jsx'
 import { invalidate } from '../cache.js'
 import { money, usd, agoText } from '../format.js'
 import CurrencyDetail from './CurrencyDetail.jsx'
@@ -23,7 +24,8 @@ function detailFromHistory() {
 }
 
 export default function Home({ showToast }) {
-  const { data, loading, error, mutate } = useCachedLoader('summary', () => api.summary())
+  const { data, loading, error, staleError, mutate } = useCachedLoader('summary', () => api.summary())
+  const [refreshError, setRefreshError] = useState('')
   const [detail, setDetail] = useState(detailFromHistory)
   const detailRef = useRef(detail)
   detailRef.current = detail
@@ -51,9 +53,11 @@ export default function Home({ showToast }) {
     try {
       const s = await api.refresh()
       mutate(s)
+      setRefreshError('')
       invalidate(['portfolio', 'zakat'])
       showToast('تم التحديث')
     } catch (e) {
+      setRefreshError(e.message || 'error')
       showToast('فشل التحديث')
     }
   }
@@ -89,6 +93,7 @@ export default function Home({ showToast }) {
       <div className="content">
         {loading && <div className="spinner" />}
         {error && <div className="card">تعذّر التحميل: {error}</div>}
+        <StaleBanner error={refreshError || staleError} />
         {data && (
           <>
             <div className="hero">

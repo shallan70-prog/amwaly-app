@@ -60,6 +60,17 @@ body {
   margin-bottom: 12px;
 }
 
+.banner {
+  background: var(--warning-bg);
+  color: var(--warning);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  margin-bottom: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
 .hero {
   background: var(--info-bg);
   border-radius: var(--radius);

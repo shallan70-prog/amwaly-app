@@ -28,6 +28,7 @@ export function saveErrorText(e) {
   if (e.message === 'exceeds_remaining') return `المبلغ أكبر من المتبقى (المتبقى ${money(d.remaining, 2)})`
   if (e.message === 'exceeds_quantity') return `الكمية أكبر من المتبقى (المتبقى ${money(d.remaining, 2)})`
   if (e.message === 'busy_try_again') return 'النظام مشغول، جرّب تانى بعد ثوانى'
+  if (e.message === 'unauthorized') return 'المفتاح غير صحيح. حدّثه من المزيد ← تغيير الرابط / المفتاح'
   return 'فشل الحفظ: ' + e.message
 }
 

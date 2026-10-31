@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { api } from '../api.js'
 import { useCachedLoader } from '../useCachedLoader.js'
+import StaleBanner from '../components/StaleBanner.jsx'
 
 const REPORTS = [
   { id: 'Monthly Cash Flow', name: 'التدفّق الشهرى' },
@@ -11,7 +12,7 @@ const REPORTS = [
 
 export default function Reports() {
   const [sel, setSel] = useState(REPORTS[0].id)
-  const { data, loading, error } = useCachedLoader('report_' + sel, () => api.report(sel))
+  const { data, loading, error, staleError } = useCachedLoader('report_' + sel, () => api.report(sel))
   const report = data && data.report
 
   return (
@@ -24,6 +25,7 @@ export default function Reports() {
 
         {loading && <div className="spinner" />}
         {error && <div className="card">تعذّر التحميل: {error}</div>}
+        <StaleBanner error={staleError} />
         {report && (
           <div className="card" style={{ overflowX: 'auto', padding: '8px 10px' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12, whiteSpace: 'nowrap' }}>

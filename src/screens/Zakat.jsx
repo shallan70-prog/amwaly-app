@@ -1,6 +1,7 @@
 import React from 'react'
 import { api } from '../api.js'
 import { useCachedLoader } from '../useCachedLoader.js'
+import StaleBanner from '../components/StaleBanner.jsx'
 import { money } from '../format.js'
 
 const ASSET_NAMES = {
@@ -16,7 +17,7 @@ const ASSET_NAMES = {
 }
 
 export default function Zakat() {
-  const { data, loading, error } = useCachedLoader('zakat', () => api.zakat())
+  const { data, loading, error, staleError } = useCachedLoader('zakat', () => api.zakat())
 
   return (
     <>
@@ -24,6 +25,7 @@ export default function Zakat() {
       <div className="content">
         {loading && <div className="spinner" />}
         {error && <div className="card">تعذّر التحميل: {error}</div>}
+        <StaleBanner error={staleError} />
         {data && (
           <>
             <div className="hero warn">

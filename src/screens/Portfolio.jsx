@@ -1,10 +1,11 @@
 import React from 'react'
 import { api } from '../api.js'
 import { useCachedLoader } from '../useCachedLoader.js'
+import StaleBanner from '../components/StaleBanner.jsx'
 import { money, pct, signed, plClass, usd } from '../format.js'
 
 export default function Portfolio() {
-  const { data, loading, error } = useCachedLoader('portfolio', () => api.portfolio())
+  const { data, loading, error, staleError } = useCachedLoader('portfolio', () => api.portfolio())
 
   return (
     <>
@@ -12,6 +13,7 @@ export default function Portfolio() {
       <div className="content">
         {loading && <div className="spinner" />}
         {error && <div className="card">تعذّر التحميل: {error}</div>}
+        <StaleBanner error={staleError} />
         {data && (
           <>
             <div className="metrics">

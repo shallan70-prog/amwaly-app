@@ -13,6 +13,8 @@ export function useCachedLoader(key, fetchFn) {
   const [data, setData] = useState(initial ? initial.data : null)
   const [loading, setLoading] = useState(!initial)
   const [error, setError] = useState('')
+  // A failed refresh while old data is on screen: shown as a warning, never hidden.
+  const [staleError, setStaleError] = useState('')
 
   const run = useCallback(async (force) => {
     const cached = getCached(key)
@@ -27,8 +29,10 @@ export function useCachedLoader(key, fetchFn) {
       setCached(key, fresh)
       setData(fresh)
       setError('')
+      setStaleError('')
     } catch (e) {
-      if (!getCached(key)) setError(e.message || 'error')
+      if (getCached(key)) setStaleError(e.message || 'error')
+      else setError(e.message || 'error')
     } finally {
       setLoading(false)
     }
@@ -40,7 +44,8 @@ export function useCachedLoader(key, fetchFn) {
     data,
     loading,
     error,
+    staleError,
     reload: () => run(true),
-    mutate: (d) => { setCached(key, d); setData(d) }
+    mutate: (d) => { setCached(key, d); setData(d); setStaleError('') }
   }
 }
