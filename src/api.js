@@ -56,7 +56,6 @@ export const api = {
   addTrade: (payload) => call('addTrade', payload),
   closeTrade: (payload) => call('closeTrade', payload),
   addEntryPlan: (payload) => call('addEntryPlan', payload),
-  addZakatAdvance: (payload) => call('addZakatAdvance', payload),
   addDebt: (payload) => call('addDebt', payload),
   history: () => call('history'),
   updateEntry: (payload) => call('updateEntry', payload),

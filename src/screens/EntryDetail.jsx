@@ -69,6 +69,7 @@ export default function EntryDetail({ entry, onBack, onChanged }) {
           <Line label="السعر" value={raw.price} />
           <Line label="الرسوم" value={raw.fees} />
           <Line label="المبلغ المستلم" value={raw.amountTo} />
+          <Line label="العملة المستلمة" value={raw.toCurrency} />
           <Line label="المصدر" value={raw.cashFlowSource} />
           <Line label="ميعاد السداد" value={entry.dueDate} />
           <Line label="ملاحظة" value={entry.notes} />

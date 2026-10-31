@@ -16,7 +16,10 @@ function debtTitle(e) {
 }
 
 export function entryTitle(e) {
-  if (e.kind === 'transaction') return TRANSACTION_LABELS[e.label] || e.label
+  if (e.kind === 'transaction') {
+    if (e.raw && e.raw.cashFlowSource === 'Zakat') return 'زكاة'
+    return TRANSACTION_LABELS[e.label] || e.label
+  }
   if (e.kind === 'investment') return `${e.label === 'sell' ? 'بيع' : 'شراء'} ${e.symbol}`
   if (e.kind === 'debt') return debtTitle(e)
   return `صفقة تداول ${e.symbol}`
