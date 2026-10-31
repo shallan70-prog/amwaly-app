@@ -150,15 +150,6 @@ export default function Home({ showToast }) {
               </div>
             </div>
 
-            {data.recent && (
-              <div className="card">
-                <div className="section-title">آخر العمليات</div>
-                {data.recent.map((e) => <EntryRow key={e.kind + (e.id || e.row)} entry={e} onOpen={openEntry} />)}
-                {data.recent.length === 0 && <div className="row"><span className="muted">مفيش عمليات لسه</span></div>}
-                <button className="link-row" onClick={() => openDetail(HISTORY_DETAIL)}>عرض الكل</button>
-              </div>
-            )}
-
             <div className="card">
               <div className="section-title">الزكاة</div>
               <div className="row">
@@ -209,6 +200,15 @@ export default function Home({ showToast }) {
                     </span>
                   </div>
                 ))}
+              </div>
+            )}
+
+            {data.recent && (
+              <div className="card">
+                <div className="section-title">آخر العمليات</div>
+                {data.recent.map((e) => <EntryRow key={e.kind + (e.id || e.row)} entry={e} onOpen={openEntry} />)}
+                {data.recent.length === 0 && <div className="row"><span className="muted">مفيش عمليات لسه</span></div>}
+                <button className="link-row" onClick={() => openDetail(HISTORY_DETAIL)}>عرض الكل</button>
               </div>
             )}
           </>
