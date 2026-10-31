@@ -32,7 +32,7 @@ export default function Add({ onClose, showToast }) {
   const common = {
     opts: data,
     onBack: () => setView('hub'),
-    onDone: () => { invalidate(['summary', 'portfolio', 'zakat']); showToast('تم الحفظ ✓'); onClose() }
+    onDone: () => { invalidate(['summary', 'portfolio', 'zakat', 'history']); showToast('تم الحفظ ✓'); onClose() }
   }
 
   return (

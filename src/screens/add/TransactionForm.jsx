@@ -2,17 +2,18 @@ import React, { useState } from 'react'
 import { api } from '../../api.js'
 import { FormShell, Field, Select, NumberInput, TextInput, saveErrorText } from './ui.jsx'
 
-export default function TransactionForm({ opts, onBack, onDone }) {
-  const [type, setType] = useState('')
-  const [account, setAccount] = useState('')
-  const [subAccount, setSubAccount] = useState('')
-  const [transferTo, setTransferTo] = useState('')
-  const [toSubAccount, setToSubAccount] = useState('')
-  const [fiat, setFiat] = useState('')
-  const [amount, setAmount] = useState('')
-  const [amountTo, setAmountTo] = useState('')
-  const [cashFlow, setCashFlow] = useState('')
-  const [notes, setNotes] = useState('')
+export default function TransactionForm({ opts, onBack, onDone, entry }) {
+  const r = (entry && entry.raw) || {}
+  const [type, setType] = useState(r.type || '')
+  const [account, setAccount] = useState(r.account || '')
+  const [subAccount, setSubAccount] = useState(r.subAccount || '')
+  const [transferTo, setTransferTo] = useState(r.transferTo || '')
+  const [toSubAccount, setToSubAccount] = useState(r.toSubAccount || '')
+  const [fiat, setFiat] = useState((opts.fiatCurrencies || []).includes(r.currency) ? r.currency : '')
+  const [amount, setAmount] = useState(r.amount != null ? String(r.amount) : '')
+  const [amountTo, setAmountTo] = useState(r.amountTo != null ? String(r.amountTo) : '')
+  const [cashFlow, setCashFlow] = useState(r.cashFlowSource || '')
+  const [notes, setNotes] = useState(r.notes || '')
   const [busy, setBusy] = useState(false)
   const [err, setErr] = useState('')
 
@@ -47,7 +48,7 @@ export default function TransactionForm({ opts, onBack, onDone }) {
 
     setBusy(true)
     try {
-      await api.addTransaction({
+      const payload = {
         type, account, subAccount,
         transferTo: isTransfer ? transferTo : undefined,
         toSubAccount: isTransfer ? toSubAccount : undefined,
@@ -55,7 +56,8 @@ export default function TransactionForm({ opts, onBack, onDone }) {
         amountTo: showAmountTo ? amountTo : undefined,
         cashFlowSource: showCashFlow ? cashFlow : undefined,
         notes
-      })
+      }
+      await (entry ? api.updateEntry({ kind: 'transaction', id: entry.id, ...payload }) : api.addTransaction(payload))
       onDone()
     } catch (e) {
       setErr(saveErrorText(e))
@@ -64,7 +66,7 @@ export default function TransactionForm({ opts, onBack, onDone }) {
   }
 
   return (
-    <FormShell title="إضافة معاملة" onBack={onBack} onSubmit={submit} submitting={busy} error={err}>
+    <FormShell title={entry ? 'تعديل معاملة' : 'إضافة معاملة'} onBack={onBack} onSubmit={submit} submitting={busy} error={err} submitLabel={entry ? 'حفظ التعديل' : undefined}>
       <Field label="النوع">
         <Select value={type} onChange={(v) => { setType(v); setTransferTo(''); setToSubAccount(''); setCashFlow('') }} options={opts.transactionTypes} />
       </Field>

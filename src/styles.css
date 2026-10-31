@@ -128,6 +128,17 @@ body {
 .btn:active { transform: scale(0.99); }
 .btn.primary { background: var(--info); color: #fff; border-color: var(--info); }
 .btn.block { margin-top: 8px; }
+.btn.danger { background: var(--danger); color: #fff; border-color: var(--danger); }
+
+.chips { display: flex; gap: 8px; margin-bottom: 10px; }
+.chips button {
+  flex: 1; padding: 8px 4px; font-size: 13px; font-family: inherit; cursor: pointer;
+  border: 0.5px solid var(--border); border-radius: var(--radius-sm);
+  background: var(--surface); color: var(--text-2);
+}
+.chips button.on { background: var(--info); border-color: var(--info); color: #fff; }
+
+.link-row { display: block; width: 100%; padding: 12px 4px 2px; background: none; border: none; color: var(--info); font-size: 13px; font-family: inherit; cursor: pointer; text-align: center; }
 
 .input {
   width: 100%;

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect } from 'react'
 import { api } from '../api.js'
 import { useCachedLoader } from '../useCachedLoader.js'
 import StaleBanner from '../components/StaleBanner.jsx'
@@ -6,6 +6,9 @@ import { invalidate } from '../cache.js'
 import { money, usd, agoText } from '../format.js'
 import CurrencyDetail from './CurrencyDetail.jsx'
 import DebtsDetail from './DebtsDetail.jsx'
+import History from './History.jsx'
+import EntryDetail from './EntryDetail.jsx'
+import EntryRow from '../components/EntryRow.jsx'
 
 const FIAT_ROWS = [
   { code: 'EGP', label: 'جنيه', decimals: 0 },
@@ -16,6 +19,8 @@ const FIAT_ROWS = [
 
 const DETAIL_KEY = 'amwalyCurrencyDetail'
 const DEBTS_DETAIL = 'DEBTS'
+const HISTORY_DETAIL = 'HISTORY'
+const ENTRY_DETAIL = 'ENTRY'
 const STALE_PRICES_MS = 60 * 60 * 1000
 
 function detailFromHistory() {
@@ -23,12 +28,16 @@ function detailFromHistory() {
   return (s && s[DETAIL_KEY]) || null
 }
 
+function detailDepth() {
+  const s = window.history.state
+  return (s && s.amwalyDepth) || 0
+}
+
 export default function Home({ showToast }) {
-  const { data, loading, error, staleError, mutate } = useCachedLoader('summary', () => api.summary())
+  const { data, loading, error, staleError, mutate, reload } = useCachedLoader('summary', () => api.summary())
   const [refreshError, setRefreshError] = useState('')
   const [detail, setDetail] = useState(detailFromHistory)
-  const detailRef = useRef(detail)
-  detailRef.current = detail
+  const [entry, setEntry] = useState(null)
 
   // Each detail page gets its own history entry, so the phone's back button closes it
   // (popstate) instead of leaving the app.
@@ -37,16 +46,24 @@ export default function Home({ showToast }) {
     window.addEventListener('popstate', onPop)
     return () => {
       window.removeEventListener('popstate', onPop)
-      // Leaving Home (another tab or the Add screen) with a detail page open: drop its entry.
-      if (detailRef.current) window.history.back()
+      // Leaving Home (another tab or the Add screen) with detail pages open: drop their entries.
+      const depth = detailDepth()
+      if (depth) window.history.go(-depth)
     }
   }, [])
 
   const openDetail = (code) => {
-    window.history.pushState({ [DETAIL_KEY]: code }, '')
+    window.history.pushState({ [DETAIL_KEY]: code, amwalyDepth: detailDepth() + 1 }, '')
     setDetail(code)
   }
   const closeDetail = () => window.history.back()
+  const openEntry = (item) => { setEntry(item); openDetail(ENTRY_DETAIL) }
+  const entryChanged = (message) => {
+    invalidate(['portfolio', 'zakat', 'history'])
+    reload()
+    showToast(message)
+    closeDetail()
+  }
 
   const refresh = async () => {
     showToast('بيحدّث الأسعار...')
@@ -60,6 +77,14 @@ export default function Home({ showToast }) {
       setRefreshError(e.message || 'error')
       showToast('فشل التحديث')
     }
+  }
+
+  if (detail === ENTRY_DETAIL && entry) {
+    return <EntryDetail key={entry.id} entry={entry} onBack={closeDetail} onChanged={entryChanged} />
+  }
+
+  if (detail === HISTORY_DETAIL || detail === ENTRY_DETAIL) {
+    return <History onBack={closeDetail} onOpen={openEntry} />
   }
 
   if (detail === DEBTS_DETAIL && data) {
@@ -124,6 +149,15 @@ export default function Home({ showToast }) {
                 <div className="value tnums">{money(data.crypto.totalPortfolioUsd != null ? data.crypto.totalPortfolioUsd : data.crypto.marketValueUsd, 2)}</div>
               </div>
             </div>
+
+            {data.recent && (
+              <div className="card">
+                <div className="section-title">آخر العمليات</div>
+                {data.recent.map((e) => <EntryRow key={e.kind + (e.id || e.row)} entry={e} onOpen={openEntry} />)}
+                {data.recent.length === 0 && <div className="row"><span className="muted">مفيش عمليات لسه</span></div>}
+                <button className="link-row" onClick={() => openDetail(HISTORY_DETAIL)}>عرض الكل</button>
+              </div>
+            )}
 
             <div className="card">
               <div className="section-title">الزكاة</div>

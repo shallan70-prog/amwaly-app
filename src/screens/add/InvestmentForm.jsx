@@ -2,14 +2,15 @@ import React, { useState } from 'react'
 import { api } from '../../api.js'
 import { FormShell, Field, Select, NumberInput, TextInput, saveErrorText } from './ui.jsx'
 
-export default function InvestmentForm({ opts, onBack, onDone }) {
-  const [type, setType] = useState('')
-  const [symbol, setSymbol] = useState('')
-  const [quote, setQuote] = useState(opts.stables[0] || 'USDT')
-  const [price, setPrice] = useState('')
-  const [quantity, setQuantity] = useState('')
-  const [fees, setFees] = useState('')
-  const [notes, setNotes] = useState('')
+export default function InvestmentForm({ opts, onBack, onDone, entry }) {
+  const r = (entry && entry.raw) || {}
+  const [type, setType] = useState(r.type || '')
+  const [symbol, setSymbol] = useState(r.symbol || '')
+  const [quote, setQuote] = useState(r.quote || opts.stables[0] || 'USDT')
+  const [price, setPrice] = useState(r.price != null ? String(r.price) : '')
+  const [quantity, setQuantity] = useState(r.quantity != null ? String(r.quantity) : '')
+  const [fees, setFees] = useState(r.fees != null ? String(r.fees) : '')
+  const [notes, setNotes] = useState(r.notes || '')
   const [busy, setBusy] = useState(false)
   const [err, setErr] = useState('')
 
@@ -20,7 +21,8 @@ export default function InvestmentForm({ opts, onBack, onDone }) {
     if (!price || !quantity) return setErr('اكتب السعر والكمية')
     setBusy(true)
     try {
-      await api.addInvestmentTrade({ type, symbol, quote, price, quantity, fees, notes })
+      const payload = { type, symbol, quote, price, quantity, fees, notes }
+      await (entry ? api.updateEntry({ kind: 'investment', id: entry.id, ...payload }) : api.addInvestmentTrade(payload))
       onDone()
     } catch (e) {
       setErr(saveErrorText(e))
@@ -29,7 +31,7 @@ export default function InvestmentForm({ opts, onBack, onDone }) {
   }
 
   return (
-    <FormShell title="صفقة استثمار" onBack={onBack} onSubmit={submit} submitting={busy} error={err}>
+    <FormShell title={entry ? 'تعديل صفقة استثمار' : 'صفقة استثمار'} onBack={onBack} onSubmit={submit} submitting={busy} error={err} submitLabel={entry ? 'حفظ التعديل' : undefined}>
       <Field label="النوع"><Select value={type} onChange={setType} options={opts.investmentTradeTypes} /></Field>
       <Field label="العملة">
         <TextInput value={symbol} onChange={(v) => setSymbol(v.toUpperCase())} list="known-symbols" placeholder="BTC" />

@@ -14,14 +14,15 @@ const WITH_DUE_DATE = ['Lent', 'Borrowed']
 
 const sameName = (a, b) => (a || '').replace(/\s+/g, ' ').trim().toLowerCase() === (b || '').replace(/\s+/g, ' ').trim().toLowerCase()
 
-export default function DebtForm({ opts, onBack, onDone }) {
-  const [type, setType] = useState('')
-  const [person, setPerson] = useState('')
-  const [amount, setAmount] = useState('')
-  const [currency, setCurrency] = useState('')
-  const [location, setLocation] = useState('')
-  const [dueDate, setDueDate] = useState('')
-  const [notes, setNotes] = useState('')
+export default function DebtForm({ opts, onBack, onDone, entry }) {
+  const r = (entry && entry.raw) || {}
+  const [type, setType] = useState(r.type || '')
+  const [person, setPerson] = useState(r.person || '')
+  const [amount, setAmount] = useState(r.amount != null ? String(r.amount) : '')
+  const [currency, setCurrency] = useState(r.currency || '')
+  const [location, setLocation] = useState(r.location || '')
+  const [dueDate, setDueDate] = useState(r.dueDate || '')
+  const [notes, setNotes] = useState(r.notes || '')
   const [busy, setBusy] = useState(false)
   const [err, setErr] = useState('')
 
@@ -46,11 +47,12 @@ export default function DebtForm({ opts, onBack, onDone }) {
 
     setBusy(true)
     try {
-      await api.addDebt({
+      const payload = {
         type, person: person.trim(), amount, currency, location,
         dueDate: withDue ? dueDate : undefined,
         notes
-      })
+      }
+      await (entry ? api.updateEntry({ kind: 'debt', id: entry.id, ...payload }) : api.addDebt(payload))
       invalidate(['formOptions'])
       onDone()
     } catch (e) {
@@ -60,7 +62,7 @@ export default function DebtForm({ opts, onBack, onDone }) {
   }
 
   return (
-    <FormShell title="إضافة دين" onBack={onBack} onSubmit={submit} submitting={busy} error={err}>
+    <FormShell title={entry ? 'تعديل دين' : 'إضافة دين'} onBack={onBack} onSubmit={submit} submitting={busy} error={err} submitLabel={entry ? 'حفظ التعديل' : undefined}>
       <Field label="النوع">
         <select className="input" value={type} onChange={(e) => { setType(e.target.value); setDueDate('') }}>
           <option value="">اختر...</option>

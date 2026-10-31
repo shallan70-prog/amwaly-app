@@ -8,6 +8,7 @@ const STATUS_TEXT = {
   'Invalid to account': 'راجع الحساب المحوّل إليه',
   'Invalid account': 'راجع الحساب والعملة',
   'Invalid transfer': 'راجع مبلغ التحويل',
+  'Exceeds remaining': 'المبلغ أكبر من المتبقى على الشخص ده',
   'Missing amount': 'اكتب المبلغ',
   'Invalid amount': 'راجع المبلغ'
 }
@@ -24,6 +25,8 @@ export function saveErrorText(e) {
     }
     return STATUS_TEXT[status] || 'العملية اترفضت: ' + status
   }
+  if (e.message === 'breaks_other_row') return `مش ممكن: ده هيخلّى عملية تانية غلط (شيت ${d.sheet}، صف ${d.row}). عدّلها أو احذفها الأول`
+  if (e.message === 'entry_not_found') return 'العملية دى مش موجودة فى الشيت. يمكن اتمسحت من هناك'
   if (e.message === 'insufficient_balance') return `الرصيد فى الخزنة دى مش كفاية (المتاح ${money(d.available, 2)})`
   if (e.message === 'exceeds_remaining') return `المبلغ أكبر من المتبقى (المتبقى ${money(d.remaining, 2)})`
   if (e.message === 'exceeds_quantity') return `الكمية أكبر من المتبقى (المتبقى ${money(d.remaining, 2)})`
