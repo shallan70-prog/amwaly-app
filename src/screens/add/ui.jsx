@@ -20,11 +20,15 @@ export function saveErrorText(e) {
 
   if (e.message === 'rejected') {
     if (status.startsWith('Insufficient')) {
-      const base = status.endsWith('quantity') ? 'الكمية اللى عندك مش كفاية' : 'الرصيد مش كفاية'
-      return d.available != null ? `${base} (المتاح ${money(d.available, 2)})` : base
+      const quantity = status.endsWith('quantity')
+      // No amount comes back when the row was checked at its own date, not against today.
+      if (d.available == null) return quantity ? 'الكمية فى تاريخ العملية مكنتش كفاية' : 'الرصيد فى تاريخ العملية مكنش كفاية'
+      return `${quantity ? 'الكمية اللى عندك مش كفاية' : 'الرصيد مش كفاية'} (المتاح ${money(d.available, 2)})`
     }
     return STATUS_TEXT[status] || 'العملية اترفضت: ' + status
   }
+  if (e.message === 'future_date') return 'التاريخ لازم يكون النهارده أو قبله'
+  if (e.message === 'invalid_date') return 'راجع التاريخ'
   if (e.message === 'breaks_other_row') return `مش ممكن: ده هيخلّى عملية تانية غلط (شيت ${d.sheet}، صف ${d.row}). عدّلها أو احذفها الأول`
   if (e.message === 'entry_not_found') return 'العملية دى مش موجودة فى الشيت. يمكن اتمسحت من هناك'
   if (e.message === 'insufficient_balance') return `الرصيد فى الخزنة دى مش كفاية (المتاح ${money(d.available, 2)})`
@@ -74,6 +78,24 @@ export function TextInput({ value, onChange, placeholder, list }) {
       className="input" value={value} placeholder={placeholder || ''} list={list}
       onChange={(e) => onChange(e.target.value)}
     />
+  )
+}
+
+// Today on this phone, in the yyyy-mm-dd form a date input uses.
+export function todayText() {
+  const d = new Date()
+  return [d.getFullYear(), String(d.getMonth() + 1).padStart(2, '0'), String(d.getDate()).padStart(2, '0')].join('-')
+}
+
+export function DateField({ value, onChange }) {
+  const today = todayText()
+  return (
+    <Field label="تاريخ العملية">
+      <input className="input" type="date" dir="ltr" value={value} max={today} onChange={(e) => onChange(e.target.value)} />
+      {value && value < today && (
+        <div style={{ fontSize: 12, color: 'var(--text-2)', margin: '-4px 2px 0' }}>الرصيد لازم يكون كافى فى التاريخ ده</div>
+      )}
+    </Field>
   )
 }
 

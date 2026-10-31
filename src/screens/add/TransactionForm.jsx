@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { api } from '../../api.js'
-import { FormShell, Field, Select, NumberInput, TextInput, saveErrorText } from './ui.jsx'
+import { FormShell, Field, Select, NumberInput, TextInput, DateField, todayText, saveErrorText } from './ui.jsx'
 
 export default function TransactionForm({ opts, onBack, onDone, entry }) {
   const r = (entry && entry.raw) || {}
@@ -14,6 +14,7 @@ export default function TransactionForm({ opts, onBack, onDone, entry }) {
   const [amountTo, setAmountTo] = useState(r.amountTo != null ? String(r.amountTo) : '')
   const [cashFlow, setCashFlow] = useState(r.cashFlowSource || '')
   const [notes, setNotes] = useState(r.notes || '')
+  const [date, setDate] = useState((entry && entry.date) || todayText())
   const [busy, setBusy] = useState(false)
   const [err, setErr] = useState('')
 
@@ -45,6 +46,7 @@ export default function TransactionForm({ opts, onBack, onDone, entry }) {
     if (showFiat && !fiat) return setErr('اختر العملة')
     if (!amount) return setErr('اكتب المبلغ')
     if (showAmountTo && !amountTo) return setErr('اكتب المبلغ المستلم')
+    if (!date) return setErr('اختر التاريخ')
 
     setBusy(true)
     try {
@@ -55,7 +57,7 @@ export default function TransactionForm({ opts, onBack, onDone, entry }) {
         amount, currency,
         amountTo: showAmountTo ? amountTo : undefined,
         cashFlowSource: showCashFlow ? cashFlow : undefined,
-        notes
+        notes, date
       }
       await (entry ? api.updateEntry({ kind: 'transaction', id: entry.id, ...payload }) : api.addTransaction(payload))
       onDone()
@@ -114,6 +116,8 @@ export default function TransactionForm({ opts, onBack, onDone, entry }) {
           <Select value={cashFlow} onChange={setCashFlow} options={cashFlowOptions} />
         </Field>
       )}
+
+      {subAccount && <DateField value={date} onChange={setDate} />}
 
       {subAccount && (
         <Field label="ملاحظة"><TextInput value={notes} onChange={setNotes} placeholder="اختيارى" /></Field>

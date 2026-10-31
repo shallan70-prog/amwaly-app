@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { api } from '../../api.js'
 import { getCached, invalidate } from '../../cache.js'
 import { money } from '../../format.js'
-import { FormShell, Field, Select, NumberInput, TextInput, saveErrorText } from './ui.jsx'
+import { FormShell, Field, Select, NumberInput, TextInput, DateField, todayText, saveErrorText } from './ui.jsx'
 
 const TYPE_HINTS = {
   'Lent': 'سلّفت حد — الفلوس خرجت منك',
@@ -23,6 +23,7 @@ export default function DebtForm({ opts, onBack, onDone, entry }) {
   const [location, setLocation] = useState(r.location || '')
   const [dueDate, setDueDate] = useState(r.dueDate || '')
   const [notes, setNotes] = useState(r.notes || '')
+  const [date, setDate] = useState((entry && entry.date) || todayText())
   const [busy, setBusy] = useState(false)
   const [err, setErr] = useState('')
 
@@ -44,13 +45,14 @@ export default function DebtForm({ opts, onBack, onDone, entry }) {
     if (!(Number(amount) > 0)) return setErr('اكتب المبلغ')
     if (!currency) return setErr('اختر العملة')
     if (!location) return setErr('اختر الخزنة')
+    if (!date) return setErr('اختر التاريخ')
 
     setBusy(true)
     try {
       const payload = {
         type, person: person.trim(), amount, currency, location,
         dueDate: withDue ? dueDate : undefined,
-        notes
+        notes, date
       }
       await (entry ? api.updateEntry({ kind: 'debt', id: entry.id, ...payload }) : api.addDebt(payload))
       invalidate(['formOptions'])
@@ -100,6 +102,8 @@ export default function DebtForm({ opts, onBack, onDone, entry }) {
               <Select value={location} onChange={setLocation} options={locations} />
             </Field>
           )}
+
+          <DateField value={date} onChange={setDate} />
 
           {withDue && (
             <Field label="ميعاد السداد (اختيارى)">

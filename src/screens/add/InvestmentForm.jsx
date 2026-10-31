@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { api } from '../../api.js'
-import { FormShell, Field, Select, NumberInput, TextInput, saveErrorText } from './ui.jsx'
+import { FormShell, Field, Select, NumberInput, TextInput, DateField, todayText, saveErrorText } from './ui.jsx'
 
 export default function InvestmentForm({ opts, onBack, onDone, entry }) {
   const r = (entry && entry.raw) || {}
@@ -11,6 +11,7 @@ export default function InvestmentForm({ opts, onBack, onDone, entry }) {
   const [quantity, setQuantity] = useState(r.quantity != null ? String(r.quantity) : '')
   const [fees, setFees] = useState(r.fees != null ? String(r.fees) : '')
   const [notes, setNotes] = useState(r.notes || '')
+  const [date, setDate] = useState((entry && entry.date) || todayText())
   const [busy, setBusy] = useState(false)
   const [err, setErr] = useState('')
 
@@ -19,9 +20,10 @@ export default function InvestmentForm({ opts, onBack, onDone, entry }) {
     if (!type) return setErr('اختر النوع')
     if (!symbol) return setErr('اكتب العملة')
     if (!price || !quantity) return setErr('اكتب السعر والكمية')
+    if (!date) return setErr('اختر التاريخ')
     setBusy(true)
     try {
-      const payload = { type, symbol, quote, price, quantity, fees, notes }
+      const payload = { type, symbol, quote, price, quantity, fees, notes, date }
       await (entry ? api.updateEntry({ kind: 'investment', id: entry.id, ...payload }) : api.addInvestmentTrade(payload))
       onDone()
     } catch (e) {
@@ -43,6 +45,7 @@ export default function InvestmentForm({ opts, onBack, onDone, entry }) {
       <Field label="السعر"><NumberInput value={price} onChange={setPrice} /></Field>
       <Field label="الكمية"><NumberInput value={quantity} onChange={setQuantity} /></Field>
       <Field label="الرسوم"><NumberInput value={fees} onChange={setFees} placeholder="اختيارى" /></Field>
+      <DateField value={date} onChange={setDate} />
       <Field label="ملاحظة"><TextInput value={notes} onChange={setNotes} placeholder="اختيارى" /></Field>
     </FormShell>
   )
