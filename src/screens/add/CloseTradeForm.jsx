@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { api } from '../../api.js'
 import { useLoader } from '../../useLoader.js'
-import { Field, NumberInput, linkStyle } from './ui.jsx'
+import { Field, NumberInput, linkStyle, saveErrorText } from './ui.jsx'
 import { money, price as fmtPrice } from '../../format.js'
 
 export default function CloseTradeForm({ onBack, onDone }) {
@@ -46,7 +46,7 @@ export default function CloseTradeForm({ onBack, onDone }) {
       await api.closeTrade({ tradeId: id, closedQuantity: qty, exitPrice, fees })
       onDone()
     } catch (e) {
-      setErr('فشل الإغلاق: ' + e.message)
+      setErr(saveErrorText(e))
       setBusy(false)
     }
   }

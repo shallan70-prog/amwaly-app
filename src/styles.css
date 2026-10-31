@@ -68,6 +68,8 @@ body {
 }
 .hero .label { font-size: 13px; color: var(--info); }
 .hero .value { font-size: 28px; font-weight: 700; color: var(--info); margin-top: 2px; }
+.hero .updated { font-size: 11px; color: var(--info); opacity: 0.8; margin-top: 4px; }
+.hero .updated.stale { color: var(--warning); opacity: 1; font-weight: 600; }
 .hero.warn { background: var(--warning-bg); }
 .hero.warn .label, .hero.warn .value { color: var(--warning); }
 

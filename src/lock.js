@@ -1,8 +1,10 @@
 // Local app-lock: a PIN (always available) plus optional biometric via WebAuthn
 // (a local-only gate that triggers the device fingerprint/face prompt).
 
-const LS_PIN = 'amwaly_pin'
+const LS_PIN_LEGACY = 'amwaly_pin'
+const LS_PIN_HASH = 'amwaly_pin_hash'
 const LS_BIO = 'amwaly_bio_id'
+const PIN_ITERATIONS = 150000
 const LS_LOCK_ON = 'amwaly_lock_enabled'
 
 function rand(len) {
@@ -24,18 +26,37 @@ export function setLockEnabled(on) {
   localStorage.setItem(LS_LOCK_ON, on ? '1' : '0')
 }
 
-export function hasPin() {
-  return !!localStorage.getItem(LS_PIN)
+async function derivePin(pin, salt) {
+  const key = await crypto.subtle.importKey('raw', new TextEncoder().encode(String(pin)), 'PBKDF2', false, ['deriveBits'])
+  const bits = await crypto.subtle.deriveBits({ name: 'PBKDF2', salt, iterations: PIN_ITERATIONS, hash: 'SHA-256' }, key, 256)
+  return bufToB64(bits)
 }
-export function setPin(pin) {
-  localStorage.setItem(LS_PIN, String(pin))
+
+export function hasPin() {
+  return !!localStorage.getItem(LS_PIN_HASH) || !!localStorage.getItem(LS_PIN_LEGACY)
+}
+export async function setPin(pin) {
+  const salt = rand(16)
+  const hash = await derivePin(pin, salt)
+  localStorage.setItem(LS_PIN_HASH, bufToB64(salt) + ':' + hash)
+  localStorage.removeItem(LS_PIN_LEGACY)
   setLockEnabled(true)
 }
-export function verifyPin(pin) {
-  return localStorage.getItem(LS_PIN) === String(pin)
+// PINs saved before hashing was added are converted once, keeping the same PIN.
+export async function upgradeLegacyPin() {
+  const legacy = localStorage.getItem(LS_PIN_LEGACY)
+  if (legacy) await setPin(legacy)
+}
+export async function verifyPin(pin) {
+  await upgradeLegacyPin()
+  const stored = localStorage.getItem(LS_PIN_HASH)
+  if (!stored) return false
+  const [salt, hash] = stored.split(':')
+  return (await derivePin(pin, b64ToBuf(salt))) === hash
 }
 export function clearLock() {
-  localStorage.removeItem(LS_PIN)
+  localStorage.removeItem(LS_PIN_HASH)
+  localStorage.removeItem(LS_PIN_LEGACY)
   localStorage.removeItem(LS_BIO)
   setLockEnabled(false)
 }
@@ -104,13 +125,10 @@ export function clearSessionUnlock() {
   try { sessionStorage.removeItem(SS_UNLOCKED) } catch (e) { /* ignore */ }
 }
 
-// The biometric system dialog itself hides/shows the page. Suppress the
-// background re-lock while (and just after) authenticating, to avoid a loop.
+// The biometric system dialog itself hides/shows the page; that must not count as leaving.
 let authInProgress = false
-let lastAuthAt = 0
 export function beginAuth() { authInProgress = true }
-export function endAuth() { authInProgress = false; lastAuthAt = Date.now() }
-export function authBusy() { return authInProgress || Date.now() - lastAuthAt < 2500 }
+export function endAuth() { authInProgress = false }
 
 // Leaving detection. The hide time is written synchronously the moment the page is
 // hidden, so it is recorded even though Android freezes the page (and its timers)

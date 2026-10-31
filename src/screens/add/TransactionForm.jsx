@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { api } from '../../api.js'
-import { FormShell, Field, Select, NumberInput, TextInput } from './ui.jsx'
+import { FormShell, Field, Select, NumberInput, TextInput, saveErrorText } from './ui.jsx'
 
 export default function TransactionForm({ opts, onBack, onDone }) {
   const [type, setType] = useState('')
@@ -34,7 +34,7 @@ export default function TransactionForm({ opts, onBack, onDone }) {
       : type === 'Expenses' ? cfExpense
         : [...new Set([...cfIncome, ...cfExpense])]
 
-  const currency = account === 'Saving' ? fiat : subAccount
+  const currency = showFiat ? fiat : subAccount
 
   const submit = async () => {
     setErr('')
@@ -58,7 +58,7 @@ export default function TransactionForm({ opts, onBack, onDone }) {
       })
       onDone()
     } catch (e) {
-      setErr('فشل الحفظ: ' + e.message)
+      setErr(saveErrorText(e))
       setBusy(false)
     }
   }

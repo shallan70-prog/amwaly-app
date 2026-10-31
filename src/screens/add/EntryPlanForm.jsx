@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { api } from '../../api.js'
-import { FormShell, Field, Select, NumberInput, TextInput } from './ui.jsx'
+import { FormShell, Field, Select, NumberInput, TextInput, saveErrorText } from './ui.jsx'
 
 export default function EntryPlanForm({ opts, onBack, onDone }) {
   const [symbol, setSymbol] = useState('')
@@ -18,7 +18,7 @@ export default function EntryPlanForm({ opts, onBack, onDone }) {
       await api.addEntryPlan({ symbol, capital, classification, sector })
       onDone()
     } catch (e) {
-      setErr('فشل الحفظ: ' + e.message)
+      setErr(saveErrorText(e))
       setBusy(false)
     }
   }

@@ -43,7 +43,7 @@ export default function Onboarding({ onDone }) {
           </button>
         </div>
         <div className="muted" style={{ fontSize: 11, textAlign: 'center' }}>
-          المفتاح من قائمة Mobile ← Setup / Show API Token فى الشيت
+          المفتاح من قائمة أموالى ← إعدادات وصيانة ← Mobile API Token فى الشيت
         </div>
       </div>
     </div>

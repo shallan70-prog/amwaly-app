@@ -15,14 +15,14 @@ export default function Lock({ onUnlock }) {
 
   useEffect(() => { tryBio() }, [tryBio])
 
-  const press = (d) => {
+  const press = async (d) => {
     setErr(false)
     const next = (pin + d).slice(0, 6)
     setPinVal(next)
-    if (next.length >= 4 && verifyPin(next)) onUnlock()
+    if (next.length >= 4 && await verifyPin(next)) onUnlock()
   }
   const back = () => { setErr(false); setPinVal(pin.slice(0, -1)) }
-  const check = () => { if (verifyPin(pin)) onUnlock(); else { setErr(true); setPinVal('') } }
+  const check = async () => { if (await verifyPin(pin)) onUnlock(); else { setErr(true); setPinVal('') } }
 
   return (
     <div className="app">

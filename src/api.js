@@ -22,18 +22,9 @@ export function isConfigured() {
   return !!(c.url && c.token)
 }
 
-async function callGet(action, params = {}) {
-  const { url, token } = getConfig()
-  if (!url || !token) throw new Error('not_configured')
-  const qs = new URLSearchParams({ action, token, ...params })
-  const res = await fetch(`${url}?${qs.toString()}`, { method: 'GET', redirect: 'follow' })
-  const data = await res.json()
-  if (!data.ok) throw new Error(data.error || 'request_failed')
-  return data
-}
-
-// POST sends JSON as text/plain to avoid a CORS preflight on Apps Script.
-async function callPost(action, payload = {}) {
+// Every call is a POST so the token never appears in a URL. JSON goes as text/plain
+// to avoid a CORS preflight on Apps Script.
+async function call(action, payload = {}) {
   const { url, token } = getConfig()
   if (!url || !token) throw new Error('not_configured')
   const res = await fetch(url, {
@@ -52,19 +43,19 @@ async function callPost(action, payload = {}) {
 }
 
 export const api = {
-  summary: () => callGet('summary'),
-  portfolio: () => callGet('portfolio'),
-  zakat: () => callGet('zakat'),
-  formOptions: () => callGet('formOptions'),
-  report: (report, params = {}) => callGet('reports', { report, ...params }),
-  openTrades: () => callGet('openTrades'),
-  refresh: () => callGet('refresh'),
-  // Writes (server endpoints land in the next step):
-  addTransaction: (payload) => callPost('addTransaction', payload),
-  addInvestmentTrade: (payload) => callPost('addInvestmentTrade', payload),
-  addTrade: (payload) => callPost('addTrade', payload),
-  closeTrade: (payload) => callPost('closeTrade', payload),
-  addEntryPlan: (payload) => callPost('addEntryPlan', payload),
-  addZakatAdvance: (payload) => callPost('addZakatAdvance', payload),
-  addDebt: (payload) => callPost('addDebt', payload)
+  summary: () => call('summary'),
+  portfolio: () => call('portfolio'),
+  zakat: () => call('zakat'),
+  formOptions: () => call('formOptions'),
+  report: (report, params = {}) => call('reports', { report, ...params }),
+  openTrades: () => call('openTrades'),
+  refresh: () => call('refresh'),
+
+  addTransaction: (payload) => call('addTransaction', payload),
+  addInvestmentTrade: (payload) => call('addInvestmentTrade', payload),
+  addTrade: (payload) => call('addTrade', payload),
+  closeTrade: (payload) => call('closeTrade', payload),
+  addEntryPlan: (payload) => call('addEntryPlan', payload),
+  addZakatAdvance: (payload) => call('addZakatAdvance', payload),
+  addDebt: (payload) => call('addDebt', payload)
 }

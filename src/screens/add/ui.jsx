@@ -1,4 +1,35 @@
 import React from 'react'
+import { money } from '../../format.js'
+
+const STATUS_TEXT = {
+  'Invalid conversion': 'راجع المبلغ المستلم',
+  'Same account transfer': 'الحساب المحوّل منه هو نفس الحساب المحوّل إليه',
+  'Invalid from account': 'راجع الحساب المحوّل منه',
+  'Invalid to account': 'راجع الحساب المحوّل إليه',
+  'Invalid account': 'راجع الحساب والعملة',
+  'Invalid transfer': 'راجع مبلغ التحويل',
+  'Missing amount': 'اكتب المبلغ',
+  'Invalid amount': 'راجع المبلغ'
+}
+
+// Turns a refused save into a clear message; the operation was not written.
+export function saveErrorText(e) {
+  const d = e.data || {}
+  const status = d.status || ''
+
+  if (e.message === 'rejected') {
+    if (status.startsWith('Insufficient')) {
+      const base = status.endsWith('quantity') ? 'الكمية اللى عندك مش كفاية' : 'الرصيد مش كفاية'
+      return d.available != null ? `${base} (المتاح ${money(d.available, 2)})` : base
+    }
+    return STATUS_TEXT[status] || 'العملية اترفضت: ' + status
+  }
+  if (e.message === 'insufficient_balance') return `الرصيد فى الخزنة دى مش كفاية (المتاح ${money(d.available, 2)})`
+  if (e.message === 'exceeds_remaining') return `المبلغ أكبر من المتبقى (المتبقى ${money(d.remaining, 2)})`
+  if (e.message === 'exceeds_quantity') return `الكمية أكبر من المتبقى (المتبقى ${money(d.remaining, 2)})`
+  if (e.message === 'busy_try_again') return 'النظام مشغول، جرّب تانى بعد ثوانى'
+  return 'فشل الحفظ: ' + e.message
+}
 
 export const linkStyle = {
   background: 'none', border: 'none', color: 'var(--info)',

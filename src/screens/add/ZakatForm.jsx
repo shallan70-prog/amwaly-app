@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { api } from '../../api.js'
 import { useCachedLoader } from '../../useCachedLoader.js'
-import { FormShell, Field, NumberInput } from './ui.jsx'
+import { FormShell, Field, NumberInput, saveErrorText } from './ui.jsx'
 import { money } from '../../format.js'
 
 export default function ZakatForm({ onBack, onDone }) {
@@ -21,7 +21,7 @@ export default function ZakatForm({ onBack, onDone }) {
       await api.addZakatAdvance({ amount })
       onDone()
     } catch (e) {
-      setErr('فشل الحفظ: ' + e.message)
+      setErr(saveErrorText(e))
       setBusy(false)
     }
   }

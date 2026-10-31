@@ -2,7 +2,7 @@ import React, { useState, useCallback, useEffect } from 'react'
 import { isConfigured } from './api.js'
 import {
   lockEnabled, isSessionUnlocked, markUnlocked,
-  noteHidden, notePageHide, consumeLeaveOnResume, consumeLeaveOnStartup
+  noteHidden, notePageHide, consumeLeaveOnResume, consumeLeaveOnStartup, upgradeLegacyPin
 } from './lock.js'
 import BottomNav from './components/BottomNav.jsx'
 import Home from './screens/Home.jsx'
@@ -30,6 +30,8 @@ export default function App() {
     setToast(msg)
     setTimeout(() => setToast(''), 2200)
   }, [])
+
+  useEffect(() => { upgradeLegacyPin() }, [])
 
   // Lock every time the app is left and returned to, but not on an in-app refresh.
   // Leaving is detected from timestamps written at hide time (see lock.js). Bumping

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import { api } from '../api.js'
 import { useCachedLoader } from '../useCachedLoader.js'
 import { invalidate } from '../cache.js'
-import { money, usd } from '../format.js'
+import { money, usd, agoText } from '../format.js'
 import CurrencyDetail from './CurrencyDetail.jsx'
 import DebtsDetail from './DebtsDetail.jsx'
 
@@ -15,6 +15,7 @@ const FIAT_ROWS = [
 
 const DETAIL_KEY = 'amwalyCurrencyDetail'
 const DEBTS_DETAIL = 'DEBTS'
+const STALE_PRICES_MS = 60 * 60 * 1000
 
 function detailFromHistory() {
   const s = window.history.state
@@ -93,6 +94,11 @@ export default function Home({ showToast }) {
             <div className="hero">
               <div className="label">صافى الثروة</div>
               <div className="value tnums">{money(data.netWorthEgp)} <span style={{ fontSize: 14 }}>EGP</span></div>
+              {data.pricesUpdatedAt > 0 && (
+                <div className={'updated' + (Date.now() - data.pricesUpdatedAt > STALE_PRICES_MS ? ' stale' : '')}>
+                  آخر تحديث للأسعار {agoText(data.pricesUpdatedAt)}
+                </div>
+              )}
             </div>
 
             <div className="metrics">

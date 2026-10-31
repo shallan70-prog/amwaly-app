@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { api } from '../../api.js'
-import { FormShell, Field, Select, NumberInput, TextInput } from './ui.jsx'
+import { FormShell, Field, Select, NumberInput, TextInput, saveErrorText } from './ui.jsx'
 
 export default function InvestmentForm({ opts, onBack, onDone }) {
   const [type, setType] = useState('')
@@ -23,7 +23,7 @@ export default function InvestmentForm({ opts, onBack, onDone }) {
       await api.addInvestmentTrade({ type, symbol, quote, price, quantity, fees, notes })
       onDone()
     } catch (e) {
-      setErr('فشل الحفظ: ' + e.message)
+      setErr(saveErrorText(e))
       setBusy(false)
     }
   }

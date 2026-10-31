@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { api } from '../../api.js'
 import { getCached, invalidate } from '../../cache.js'
 import { money } from '../../format.js'
-import { FormShell, Field, Select, NumberInput, TextInput } from './ui.jsx'
+import { FormShell, Field, Select, NumberInput, TextInput, saveErrorText } from './ui.jsx'
 
 const TYPE_HINTS = {
   'Lent': 'سلّفت حد — الفلوس خرجت منك',
@@ -13,14 +13,6 @@ const TYPE_HINTS = {
 const WITH_DUE_DATE = ['Lent', 'Borrowed']
 
 const sameName = (a, b) => (a || '').replace(/\s+/g, ' ').trim().toLowerCase() === (b || '').replace(/\s+/g, ' ').trim().toLowerCase()
-
-function errorText(e) {
-  const d = e.data || {}
-  if (e.message === 'insufficient_balance') return `الرصيد فى الخزنة دى مش كفاية (المتاح ${money(d.available, 2)})`
-  if (e.message === 'exceeds_remaining') return `المبلغ أكبر من المتبقى (المتبقى ${money(d.remaining, 2)})`
-  if (e.message === 'busy_try_again') return 'النظام مشغول، جرّب تانى بعد ثوانى'
-  return 'فشل الحفظ: ' + e.message
-}
 
 export default function DebtForm({ opts, onBack, onDone }) {
   const [type, setType] = useState('')
@@ -62,7 +54,7 @@ export default function DebtForm({ opts, onBack, onDone }) {
       invalidate(['formOptions'])
       onDone()
     } catch (e) {
-      setErr(errorText(e))
+      setErr(saveErrorText(e))
       setBusy(false)
     }
   }

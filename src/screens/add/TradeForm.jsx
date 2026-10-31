@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { api } from '../../api.js'
-import { FormShell, Field, Select, NumberInput, TextInput } from './ui.jsx'
+import { FormShell, Field, Select, NumberInput, TextInput, saveErrorText } from './ui.jsx'
 
 export default function TradeForm({ opts, onBack, onDone }) {
   const [symbol, setSymbol] = useState('')
@@ -24,7 +24,7 @@ export default function TradeForm({ opts, onBack, onDone }) {
       await api.addTrade({ symbol, quote, setup, entryPrice, quantity, stopLoss, takeProfit, fees, notes })
       onDone()
     } catch (e) {
-      setErr('فشل الحفظ: ' + e.message)
+      setErr(saveErrorText(e))
       setBusy(false)
     }
   }

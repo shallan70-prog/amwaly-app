@@ -18,9 +18,9 @@ export default function More({ showToast, onReset, setTab }) {
     catch (e) { showToast('فشل: ' + e.message) }
   }
 
-  const savePin = () => {
+  const savePin = async () => {
     if (!/^\d{4,6}$/.test(pinInput)) { showToast('الرقم 4 لـ 6 أرقام'); return }
-    setPin(pinInput); markUnlocked(); setPinInput(''); force((n) => n + 1)
+    await setPin(pinInput); markUnlocked(); setPinInput(''); force((n) => n + 1)
     showToast('تم تفعيل القفل')
   }
 
