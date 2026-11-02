@@ -2,6 +2,7 @@ import React from 'react'
 import { api } from '../api.js'
 import { useCachedLoader } from '../useCachedLoader.js'
 import StaleBanner from '../components/StaleBanner.jsx'
+import PriceWarnings from '../components/PriceWarnings.jsx'
 import { money, pct, signed, plClass, usd } from '../format.js'
 
 export default function Portfolio() {
@@ -16,6 +17,7 @@ export default function Portfolio() {
         <StaleBanner error={staleError} />
         {data && (
           <>
+            <PriceWarnings warnings={data.priceWarnings} />
             <div className="metrics">
               <div className="metric">
                 <div className="label">إجمالى الكريبتو</div>

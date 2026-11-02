@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { api } from '../api.js'
 import { useCachedLoader } from '../useCachedLoader.js'
 import StaleBanner from '../components/StaleBanner.jsx'
+import PriceWarnings from '../components/PriceWarnings.jsx'
 import { invalidate } from '../cache.js'
 import { money, usd, agoText } from '../format.js'
 import CurrencyDetail from './CurrencyDetail.jsx'
@@ -121,6 +122,7 @@ export default function Home({ showToast }) {
         <StaleBanner error={refreshError || staleError} />
         {data && (
           <>
+            <PriceWarnings warnings={data.priceWarnings} />
             <div className="hero">
               <div className="label">صافى الثروة</div>
               <div className="value tnums">{money(data.netWorthEgp)} <span style={{ fontSize: 14 }}>EGP</span></div>
