@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useEffect } from 'react'
 import { isConfigured } from './api.js'
+import { clearAllCached } from './cache.js'
 import {
   lockEnabled, isSessionUnlocked, markUnlocked,
   noteHidden, notePageHide, consumeLeaveOnResume, consumeLeaveOnStartup, upgradeLegacyPin
@@ -72,7 +73,7 @@ export default function App() {
       {tab === 'portfolio' && <Portfolio key={dataKey} showToast={showToast} />}
       {tab === 'zakat' && <Zakat key={dataKey} showToast={showToast} />}
       {tab === 'reports' && <Reports key={dataKey} showToast={showToast} />}
-      {tab === 'more' && <More showToast={showToast} setTab={setTab} onReset={() => setConfigured(false)} />}
+      {tab === 'more' && <More showToast={showToast} setTab={setTab} onReset={() => { clearAllCached(); setConfigured(false) }} />}
 
       <BottomNav tab={tab} setTab={setTab} onAdd={() => setAddOpen(true)} />
       {toast && <div className="toast">{toast}</div>}

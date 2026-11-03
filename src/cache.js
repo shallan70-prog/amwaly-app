@@ -20,6 +20,14 @@ export function setCached(key, data) {
   return entry
 }
 
+// Everything the app saved on the phone, so nothing is left behind when the link or token changes.
+export function clearAllCached() {
+  Object.keys(mem).forEach((k) => { delete mem[k] })
+  try {
+    Object.keys(localStorage).filter((k) => k.startsWith('cache_')).forEach((k) => localStorage.removeItem(k))
+  } catch (e) { /* ignore */ }
+}
+
 export function invalidate(keys) {
   keys.forEach((k) => {
     delete mem[k]

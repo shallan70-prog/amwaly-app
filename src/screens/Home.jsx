@@ -75,6 +75,10 @@ export default function Home({ showToast }) {
       invalidate(['portfolio', 'zakat'])
       showToast('تم التحديث')
     } catch (e) {
+      if (e.message === 'busy_try_again') {
+        showToast('التحديث التلقائى شغال دلوقتى، جرّب تانى بعد شوية')
+        return
+      }
       setRefreshError(e.message || 'error')
       showToast('فشل التحديث')
     }

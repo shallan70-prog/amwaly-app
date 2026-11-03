@@ -15,7 +15,7 @@ export default function More({ showToast, onReset, setTab }) {
   const fullRefresh = async () => {
     showToast('بيحدّث كل البيانات...')
     try { await api.refresh(); showToast('تم التحديث الكامل') }
-    catch (e) { showToast('فشل: ' + e.message) }
+    catch (e) { showToast(e.message === 'busy_try_again' ? 'التحديث التلقائى شغال دلوقتى، جرّب تانى بعد شوية' : 'فشل: ' + e.message) }
   }
 
   const savePin = async () => {
