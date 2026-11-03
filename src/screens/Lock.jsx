@@ -36,15 +36,15 @@ export default function Lock({ onUnlock }) {
             <span key={i} className={'pin-dot' + (i < pin.length ? ' on' : '')} />
           ))}
         </div>
-        {err && <div className="neg" style={{ marginTop: -10 }}>رقم غير صحيح</div>}
+        {err && <div className="neg" role="alert" style={{ marginTop: -10 }}>رقم غير صحيح</div>}
 
         <div className="keypad">
           {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => (
             <button key={n} onClick={() => press(String(n))}>{n}</button>
           ))}
-          <button onClick={back}>⌫</button>
+          <button onClick={back} aria-label="امسح آخر رقم">⌫</button>
           <button onClick={() => press('0')}>0</button>
-          <button onClick={check}>✓</button>
+          <button onClick={check} aria-label="تأكيد">✓</button>
         </div>
 
         {biometricEnabled() && (

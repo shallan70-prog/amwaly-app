@@ -44,12 +44,13 @@ export const linkStyle = {
   fontSize: 14, fontFamily: 'inherit', cursor: 'pointer'
 }
 
+// The label wraps its control, so a screen reader reads the field's name with it.
 export function Field({ label, children }) {
   return (
-    <div style={{ marginBottom: 10 }}>
-      <label className="field">{label}</label>
+    <label style={{ display: 'block', marginBottom: 10 }}>
+      <span className="field">{label}</span>
       {children}
-    </div>
+    </label>
   )
 }
 
@@ -108,7 +109,7 @@ export function FormShell({ title, onBack, onSubmit, submitting, error, submitLa
       </div>
       <div className="content">
         <div className="card">{children}</div>
-        {error && <div className="neg" style={{ margin: '4px 2px 10px' }}>{error}</div>}
+        {error && <div className="neg" role="alert" style={{ margin: '4px 2px 10px' }}>{error}</div>}
         <button className="btn primary block" onClick={onSubmit} disabled={submitting}>
           {submitting ? 'بيحفظ...' : (submitLabel || 'حفظ فى الشيت')}
         </button>

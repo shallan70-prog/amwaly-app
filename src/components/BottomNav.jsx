@@ -15,7 +15,7 @@ export default function BottomNav({ tab, setTab, onAdd }) {
   const item = (id, icon, label) => {
     const active = tab === id || (id === 'more' && tab === 'reports')
     return (
-      <button className={active ? 'active' : ''} onClick={() => setTab(id)}>
+      <button className={active ? 'active' : ''} aria-current={active ? 'page' : undefined} onClick={() => setTab(id)}>
         <span className="icon"><Icon name={icon} /></span>
         <span>{label}</span>
       </button>

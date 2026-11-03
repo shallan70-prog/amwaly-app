@@ -47,8 +47,8 @@ export default function More({ showToast, onReset, setTab }) {
           </div>
           {!hasPin() ? (
             <>
-              <label className="field">رقم PIN (4 لـ 6 أرقام)</label>
-              <input className="input" inputMode="numeric" maxLength={6} value={pinInput}
+              <label className="field" htmlFor="pin-input">رقم PIN (4 لـ 6 أرقام)</label>
+              <input id="pin-input" className="input" inputMode="numeric" maxLength={6} value={pinInput}
                 onChange={(e) => setPinInput(e.target.value.replace(/\D/g, ''))} placeholder="••••" />
               <button className="btn" onClick={savePin}>تفعيل القفل برقم</button>
             </>

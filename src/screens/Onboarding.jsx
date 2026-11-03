@@ -33,11 +33,11 @@ export default function Onboarding({ onDone }) {
         </div>
 
         <div className="card">
-          <label className="field">رابط الـ Web App</label>
-          <input className="input" value={url} onChange={(e) => setUrl(e.target.value)} dir="ltr" />
-          <label className="field">المفتاح (API token)</label>
-          <input className="input" value={token} onChange={(e) => setToken(e.target.value)} dir="ltr" placeholder="الصق المفتاح هنا" />
-          {err && <div className="neg" style={{ marginBottom: 8 }}>{err}</div>}
+          <label className="field" htmlFor="api-url">رابط الـ Web App</label>
+          <input id="api-url" className="input" value={url} onChange={(e) => setUrl(e.target.value)} dir="ltr" />
+          <label className="field" htmlFor="api-token">المفتاح (API token)</label>
+          <input id="api-token" className="input" value={token} onChange={(e) => setToken(e.target.value)} dir="ltr" placeholder="الصق المفتاح هنا" />
+          {err && <div className="neg" role="alert" style={{ marginBottom: 8 }}>{err}</div>}
           <button className="btn primary" onClick={connect} disabled={busy}>
             {busy ? 'بيتصل...' : 'اتصال'}
           </button>
