@@ -8,7 +8,9 @@ const STATUS_TEXT = {
   'Invalid to account': 'راجع الحساب المحوّل إليه',
   'Invalid account': 'راجع الحساب والعملة',
   'Invalid transfer': 'راجع مبلغ التحويل',
-  'Exceeds remaining': 'المبلغ أكبر من المتبقى على الشخص ده',
+  'Exceeds remaining': 'المبلغ أكبر من المتبقى فى الدين ده',
+  'Invalid debt': 'الدين اللى اخترته مش موجود أو خلص',
+  'Debt mismatch': 'الشخص أو العملة مش زى الدين اللى اخترته',
   'Missing amount': 'اكتب المبلغ',
   'Invalid amount': 'راجع المبلغ'
 }
@@ -33,6 +35,7 @@ export function saveErrorText(e) {
   if (e.message === 'entry_not_found') return 'العملية دى مش موجودة فى الشيت. يمكن اتمسحت من هناك'
   if (e.message === 'insufficient_balance') return `الرصيد فى الخزنة دى مش كفاية (المتاح ${money(d.available, 2)})`
   if (e.message === 'exceeds_remaining') return `المبلغ أكبر من المتبقى (المتبقى ${money(d.remaining, 2)})`
+  if (e.message === 'invalid_debt') return 'الدين اللى اخترته مش موجود أو خلص. ارجع وافتح الشاشة تانى'
   if (e.message === 'exceeds_quantity') return `الكمية أكبر من المتبقى (المتبقى ${money(d.remaining, 2)})`
   if (e.message === 'busy_try_again') return 'النظام مشغول، جرّب تانى بعد ثوانى'
   if (e.message === 'unauthorized') return 'المفتاح غير صحيح. حدّثه من المزيد ← تغيير الرابط / المفتاح'
