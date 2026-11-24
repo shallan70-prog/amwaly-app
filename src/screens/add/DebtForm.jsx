@@ -11,6 +11,9 @@ const TYPE_HINTS = {
   'Repaid': 'رجّعت لحد فلوس'
 }
 const WITH_DUE_DATE = ['Lent', 'Borrowed']
+// A debt from before the records started: only these types, and no money moves.
+const OPENING_TYPES = ['Lent', 'Borrowed']
+const OPENING_LABEL = 'رصيد قديم (قبل التسجيل)'
 
 const sameName = (a, b) => (a || '').replace(/\s+/g, ' ').trim().toLowerCase() === (b || '').replace(/\s+/g, ' ').trim().toLowerCase()
 
@@ -31,6 +34,8 @@ export default function DebtForm({ opts, onBack, onDone, entry }) {
   const people = opts.debtPeople || []
   const locations = (opts.subAccountsByAccountType && opts.subAccountsByAccountType.Saving) || []
   const withDue = WITH_DUE_DATE.indexOf(type) !== -1
+  const opening = opts.debtOpeningLocation
+  const locationOptions = opening && OPENING_TYPES.indexOf(type) !== -1 ? [...locations, opening] : locations
 
   // Current balance with this person, from the already-loaded home summary (no request).
   const summary = getCached('summary')
@@ -66,7 +71,11 @@ export default function DebtForm({ opts, onBack, onDone, entry }) {
   return (
     <FormShell title={entry ? 'تعديل دين' : 'إضافة دين'} onBack={onBack} onSubmit={submit} submitting={busy} error={err} submitLabel={entry ? 'حفظ التعديل' : undefined}>
       <Field label="النوع">
-        <select className="input" value={type} onChange={(e) => { setType(e.target.value); setDueDate('') }}>
+        <select className="input" value={type} onChange={(e) => {
+          setType(e.target.value)
+          setDueDate('')
+          if (location === opening && OPENING_TYPES.indexOf(e.target.value) === -1) setLocation('')
+        }}>
           <option value="">اختر...</option>
           {types.map((t) => <option key={t} value={t}>{t} — {TYPE_HINTS[t] || t}</option>)}
         </select>
@@ -99,8 +108,17 @@ export default function DebtForm({ opts, onBack, onDone, entry }) {
 
           {currency && (
             <Field label="الخزنة">
-              <Select value={location} onChange={setLocation} options={locations} />
+              <select className="input" value={location} onChange={(e) => setLocation(e.target.value)}>
+                <option value="">اختر...</option>
+                {locationOptions.map((l) => <option key={l} value={l}>{l === opening ? OPENING_LABEL : l}</option>)}
+              </select>
             </Field>
+          )}
+
+          {opening && location === opening && (
+            <div className="muted" style={{ fontSize: 12, margin: '-4px 2px 10px' }}>
+              دين من قبل ما تبدأ التسجيل: بيتسجل على الشخص بس، ومفيش أى رصيد عندك هيتحرك
+            </div>
           )}
 
           <DateField value={date} onChange={setDate} />
