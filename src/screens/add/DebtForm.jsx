@@ -16,11 +16,13 @@ const OPENING_TYPES = ['Lent', 'Borrowed']
 const OPENING_LABEL = 'رصيد قديم (قبل التسجيل)'
 // A payment settles a debt of the other side: Repaid pays what I borrowed, Received Back collects what I lent.
 const SETTLES = { 'Repaid': 'Borrowed', 'Received Back': 'Lent' }
-const ZAKAT_IN = 'يدخل'
-const ZAKAT_OUT = 'لا يدخل'
+const ZAKAT_IN = 'يُحسب في الزكاة'
+const ZAKAT_OUT = 'لا يُحسب في الزكاة'
+// Words saved before the change still pick the right choice when an old entry is edited.
+const OLD_ZAKAT_WORDS = { 'يدخل': ZAKAT_IN, 'لا يدخل': ZAKAT_OUT }
 const ZAKAT_HINTS = {
-  'Lent': { [ZAKAT_IN]: 'يدخل — هتدفع عليه زكاة', [ZAKAT_OUT]: 'لا يدخل — مش هتدفع عليه زكاة' },
-  'Borrowed': { [ZAKAT_IN]: 'يدخل — هيتخصم من الزكاة', [ZAKAT_OUT]: 'لا يدخل — مش هيتخصم من الزكاة' }
+  'Lent': { [ZAKAT_IN]: ZAKAT_IN + ' — هتدفع عليه زكاة', [ZAKAT_OUT]: ZAKAT_OUT + ' — مش هتدفع عليه زكاة' },
+  'Borrowed': { [ZAKAT_IN]: ZAKAT_IN + ' — هيتخصم من الزكاة', [ZAKAT_OUT]: ZAKAT_OUT + ' — مش هيتخصم من الزكاة' }
 }
 const defaultZakat = (type) => (type === 'Lent' ? ZAKAT_IN : ZAKAT_OUT)
 
@@ -35,7 +37,7 @@ export default function DebtForm({ opts, onBack, onDone, entry }) {
   const [location, setLocation] = useState(r.location || '')
   const [dueDate, setDueDate] = useState(r.dueDate || '')
   const [notes, setNotes] = useState(r.notes || '')
-  const [zakat, setZakat] = useState(r.zakat || '')
+  const [zakat, setZakat] = useState(OLD_ZAKAT_WORDS[r.zakat] || r.zakat || '')
   const [debtId, setDebtId] = useState(r.debtId || '')
   const [date, setDate] = useState((entry && entry.date) || todayText())
   const [busy, setBusy] = useState(false)

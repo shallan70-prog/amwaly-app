@@ -13,10 +13,10 @@ const ASSET_NAMES = {
   'Total Crypto': 'كريبتو',
   'Gold': 'ذهب',
   'Stocks': 'أسهم',
-  'Debts Receivable': 'ديون ليا تدخل الزكاة',
-  'Debts Receivable - No Zakat': 'ديون ليا لا تدخل الزكاة',
-  'Debts Payable - Deducted': 'ديون عليا تتخصم من الزكاة',
-  'Debts Payable': 'ديون عليا لا تتخصم'
+  'Debts Receivable': 'ديون ليا تُحسب في الزكاة',
+  'Debts Receivable - No Zakat': 'ديون ليا لا تُحسب في الزكاة',
+  'Debts Payable - Deducted': 'ديون عليا تُحسب في الزكاة',
+  'Debts Payable': 'ديون عليا لا تُحسب في الزكاة'
 }
 
 export default function Zakat() {
