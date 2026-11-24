@@ -9,6 +9,7 @@ const ASSET_NAMES = {
   'Total Fiat USD': 'نقدية دولار',
   'Total Fiat SAR': 'نقدية ريال',
   'Total Fiat AED': 'نقدية درهم',
+  'Total Fiat EUR': 'نقدية يورو',
   'Total Crypto': 'كريبتو',
   'Gold': 'ذهب',
   'Stocks': 'أسهم',

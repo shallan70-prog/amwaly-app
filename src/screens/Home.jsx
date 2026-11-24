@@ -15,7 +15,8 @@ const FIAT_ROWS = [
   { code: 'EGP', label: 'جنيه', decimals: 0 },
   { code: 'USD', label: 'دولار', decimals: 2 },
   { code: 'SAR', label: 'ريال', decimals: 2 },
-  { code: 'AED', label: 'درهم', decimals: 2 }
+  { code: 'AED', label: 'درهم', decimals: 2 },
+  { code: 'EUR', label: 'يورو', decimals: 2 }
 ]
 
 const DETAIL_KEY = 'amwalyCurrencyDetail'
